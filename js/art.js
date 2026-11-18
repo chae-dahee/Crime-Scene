@@ -299,6 +299,7 @@ const ART = (() => {
     backstage: 'assets/scenario4/backgrounds/backstage.png',
     booth: 'assets/scenario4/backgrounds/control-room.png',
     lobbyHall: 'assets/scenario4/backgrounds/lobby.png',
+    theaterRoom: 'assets/scenario4/backgrounds/interrogation.png',
   };
   Object.entries(paintedScenes).forEach(([scene, file]) => {
     const src = file.startsWith('assets/') ? file : `assets/scenario1/backgrounds/${file}.png`;
