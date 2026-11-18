@@ -269,14 +269,6 @@ const ART = (() => {
       ${windowRain(600, 70, 120, 160, '#2a3440')}
       <rect y="380" width="800" height="70" fill="#10161a"/>
     `),
-    theaterRoom: svg(`
-      <defs>
-        <radialGradient id="tr-spot" cx="0.5" cy="0.35" r="0.6"><stop offset="0" stop-color="#4a2a30"/><stop offset="1" stop-color="#0e0a0c"/></radialGradient>
-      </defs>
-      <rect width="800" height="450" fill="url(#tr-spot)"/>
-      <path d="M0 0 L120 0 Q90 220 110 450 L0 450 Z M800 0 L680 0 Q710 220 690 450 L800 450 Z" fill="#5a1a1f"/>
-      <rect y="380" width="800" height="70" fill="#1a1210"/>
-    `),
   };
 
   const paintedScenes = {
