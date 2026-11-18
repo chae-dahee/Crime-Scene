@@ -1,6 +1,6 @@
 const LOBBY = [
   { id: 'mansion', title: '백야장 독살 사건', tag: '저택 · 용의자 4명', art: 'mansion', desc: '폭우로 고립된 저택. 새 유언장 공개 전날 밤, 주인이 서재에서 숨진 채 발견된다.' },
-  { id: 'theater', title: '커튼콜', tag: '소극장 · 용의자 4명', art: 'theater', desc: '폐관 공연의 마지막 밤, 분장실에서 극단 대표가 숨진 채 발견된다.', locked: true },
+  { id: 'theater', title: '커튼콜', tag: '소극장 · 용의자 4명', art: 'theater', desc: '폐관 공연의 마지막 밤, 분장실에서 극단 대표가 숨진 채 발견된다.' },
   { id: 'lighthouse', title: '마지막 불빛', tag: '섬 · 용의자 4명', art: 'lighthouse', desc: '폭풍 치는 밤 등대 불이 꺼졌다. 다음 날 아침, 등대지기가 계단 아래에서 발견된다.' },
 ];
 const MAX_LIVES = 3;
@@ -135,7 +135,8 @@ function present(clueId) {
   const again = r && state.presented.has(key);
   state.presented.add(key);
   const text = !r ? sus.fallback : again ? (r.again || sus.pressed || r.text) : r.text;
-  say(sus.name, text, () => { if (r && r.gives) gainClue(r.gives); }, suspectChoices(sus));
+  const gives = r && (again ? r.againGives : r.gives);
+  say(sus.name, text, () => { if (gives) gainClue(gives); }, suspectChoices(sus));
 }
 
 // 대사창 (타자 효과)

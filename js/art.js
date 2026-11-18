@@ -269,6 +269,14 @@ const ART = (() => {
       ${windowRain(600, 70, 120, 160, '#2a3440')}
       <rect y="380" width="800" height="70" fill="#10161a"/>
     `),
+    theaterRoom: svg(`
+      <defs>
+        <radialGradient id="tr-spot" cx="0.5" cy="0.35" r="0.6"><stop offset="0" stop-color="#4a2a30"/><stop offset="1" stop-color="#0e0a0c"/></radialGradient>
+      </defs>
+      <rect width="800" height="450" fill="url(#tr-spot)"/>
+      <path d="M0 0 L120 0 Q90 220 110 450 L0 450 Z M800 0 L680 0 Q710 220 690 450 L800 450 Z" fill="#5a1a1f"/>
+      <rect y="380" width="800" height="70" fill="#1a1210"/>
+    `),
   };
 
   const paintedScenes = {
@@ -287,6 +295,11 @@ const ART = (() => {
     hallway: 'hallway-clues',
     mansion: 'mansion',
     theater: 'assets/scenario4/backgrounds/dressing-room.png',
+    stage: 'assets/scenario4/backgrounds/stage.png',
+    backstage: 'assets/scenario4/backgrounds/backstage.png',
+    booth: 'assets/scenario4/backgrounds/control-room.png',
+    lobbyHall: 'assets/scenario4/backgrounds/lobby.png',
+    theaterRoom: 'assets/scenario4/backgrounds/interrogation.png',
   };
   Object.entries(paintedScenes).forEach(([scene, file]) => {
     const src = file.startsWith('assets/') ? file : `assets/scenario1/backgrounds/${file}.png`;
@@ -352,6 +365,9 @@ const ART = (() => {
     lamp: '<path d="M9 4h6v3H9z M7 7h10l-1 9H8z M10 20h4 M12 16v4"/>',
     camera: '<rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 7l2-3h4l2 3"/>',
     lens: '<circle cx="7" cy="15" r="4"/><circle cx="17" cy="15" r="4"/><path d="M7 11V6h3v5 M17 11V6h-3v5 M10 9h4"/>',
+    trophy: '<path d="M7 4h10v5a5 5 0 0 1-10 0z M7 6H4a3 3 0 0 0 3 4 M17 6h3a3 3 0 0 1-3 4 M12 14v4 M8 21h8"/>',
+    phone: '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10 18h4"/>',
+    glove: '<path d="M7 21v-8L5 9a1.5 1.5 0 0 1 2.5-1.5L9 10V4a1.5 1.5 0 0 1 3 0v5V3a1.5 1.5 0 0 1 3 0v6V5a1.5 1.5 0 0 1 3 0v9a7 7 0 0 1-2 5v2z"/>',
   };
   const icon = (name) =>
     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name] || icons.doc}</svg>`;
