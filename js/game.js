@@ -135,7 +135,8 @@ function present(clueId) {
   const again = r && state.presented.has(key);
   state.presented.add(key);
   const text = !r ? sus.fallback : again ? (r.again || sus.pressed || r.text) : r.text;
-  say(sus.name, text, () => { if (r && r.gives) gainClue(r.gives); }, suspectChoices(sus));
+  const gives = r && (again ? r.againGives : r.gives);
+  say(sus.name, text, () => { if (gives) gainClue(gives); }, suspectChoices(sus));
 }
 
 // 대사창 (타자 효과)
