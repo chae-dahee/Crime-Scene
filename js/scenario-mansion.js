@@ -26,6 +26,7 @@ SCENARIOS.mansion = {
     maid_greenhouse: { name: '온실 목격담', icon: 'voice', desc: '어제 저녁 집사가 윤재호의 젖은 구두를 닦아 주려 했지만 윤재호가 사양했다. 윤재호는 온실 쪽 문으로 들어왔다.' },
     annex: { name: '유언장 부속 문서', icon: 'doc', desc: '윤재호의 투약 실수로 한도윤의 병세가 악화되었다는 기록. 내일 공개될 예정이었다.' },
     secret: { name: '은우의 비밀', icon: 'voice', desc: '최은우는 한도윤의 혼외 딸이다. 그 사실을 확인하려고 비서로 들어왔다.' },
+    dismissal: { name: '해고 통보서', icon: 'doc', desc: '한도윤이 박미령에게 보낸 해고 통보서. 30년 근속 끝에 사흘 전 받았다.' },
     maid_secret: { name: '집사가 숨긴 과거', icon: 'voice', desc: '박미령은 오래전부터 은우의 어머니와 한도윤의 관계를 알고 있었다. 한도윤의 부탁으로 서진과 은우 모두에게 비밀로 했다.' },
   },
 
@@ -73,7 +74,7 @@ SCENARIOS.mansion = {
       spots: [
         { id: 'seojin', label: '한서진의 방', x: 16, y: 90, clue: 'debt_letters', text: '문 앞 바닥에 빚 독촉장이 흩어져 있다. 모두 한서진 앞으로 왔고 기한은 이번 달 말이다.' },
         { id: 'jaeho', label: '윤재호의 방', x: 34, y: 76, clue: 'muddy_shoes', text: '문 옆에 구두가 놓여 있다. 밑창에 붉은 진흙이 말라붙어 있다.' },
-        { id: 'miryeong', label: '박미령의 방', x: 71, y: 41, text: '30년 근속 감사패가 걸려 있다. 방은 단정하게 정리돼 있다.' },
+        { id: 'miryeong', label: '박미령의 방', x: 71, y: 41, clue: 'dismissal', text: '30년 근속 감사패가 걸려 있다. 그 아래 서랍에 한도윤의 서명이 든 해고 통보서가 있다. 날짜는 사흘 전이다.' },
         { id: 'eunwoo', label: '최은우의 방', x: 96, y: 39, clue: 'old_photo', text: '벽에 오래된 가족사진이 걸려 있다. 젊은 한도윤 옆에 선 여성이 최은우와 놀랍도록 닮았다.' },
       ],
     },
@@ -92,6 +93,7 @@ SCENARIOS.mansion = {
         secret: { text: '은우가 아버지 딸이라고요? 그래서 새 유언장에 이름이 있었군요. 그 애가 아버지에게 접근한 이유가 이제야 분명해졌네요.' },
         maid_secret: { text: '집사님은 은우 어머니까지 알고 있었어요? 30년 동안 우리 집에서 일하면서 나만 속인 거예요? 아버지와 유언장 이야기를 당신도 숨겼잖아요.' },
         maid_testimony: { text: '윤 선생님이 약통을요? …그 집사 말을 믿어요? 30년 동안 아버지 귀에 남 얘기만 속삭이던 사람이에요.' },
+        dismissal: { text: '아버지가 사흘 전에 집사님을 내보내기로 하셨죠. 30년을 모셨는데 원망 안 했을 리가 없잖아요. 그날 차를 우린 사람도 집사님이에요.' },
         teapot: { text: '봐요, 나도 그 주전자 차를 마셨다니까요.' },
         tea_cup: { text: '식은 차예요. 아버지는 늘 반쯤 남기셨어요.' },
       },
@@ -138,6 +140,7 @@ SCENARIOS.mansion = {
         teapot: { text: '네, 같은 주전자로 아가씨와 저도 마셨어요. 보시다시피 저희는 멀쩡합니다.' },
         tea_cup: { text: '그 차는 제가 우렸어요. 아가씨와 저도 같은 차를 마셨습니다.' },
         footprint: { text: '온실은 주인님만 드나드셨어요. 저는 그쪽에 가지 않습니다.' },
+        dismissal: { text: '…보셨군요. 30년을 모셨는데, 종이 한 장이었어요. 그렇다고 주인님을 해칠 리가 있나요.', again: '그만하세요. 저도 아직 받아들이지 못했어요.' },
         muddy_shoes: { text: '어제 구두를 닦아 드리려 했는데 괜찮다고 하셨어요. 온실 쪽 문으로 들어오시면서요.', gives: 'maid_greenhouse' },
       },
       fallback: '잘 모르겠습니다.',
@@ -170,7 +173,7 @@ SCENARIOS.mansion = {
         { id: 'tea', label: '홍차에 독을 탔다' }, { id: 'swap', label: '약을 독 캡슐로 바꿔치기했다' }, { id: 'inject', label: '주사로 독을 넣었다' },
       ] },
       { key: 'motive', label: '동기', options: [
-        { id: 'inherit', label: '상속을 지키려고' }, { id: 'malpractice', label: '의료 과실을 숨기려고' }, { id: 'grudge', label: '오랜 원한 때문에' }, { id: 'secret', label: '출생의 비밀 때문에' },
+        { id: 'inherit', label: '상속을 지키려고' }, { id: 'malpractice', label: '의료 과실을 숨기려고' }, { id: 'grudge', label: '해고당한 원한 때문에' }, { id: 'secret', label: '출생의 비밀 때문에' },
       ] },
     ],
     answer: { culprit: 'jaeho', method: 'swap', motive: 'malpractice' },
