@@ -221,6 +221,7 @@
   .modal-dark { background: #181310; border: 1px solid #4a3d30; }
   .modal-dark h2 { font-family: var(--serif); margin-bottom: 1rem; color: var(--gold); }
   .modal-dark ol { padding-left: 1.2rem; line-height: 1.9; margin-bottom: 1.5rem; }
+  .modal-dark p { line-height: 1.7; margin-bottom: 1.5rem; }
   .case-file { position: relative; background: #d8c9a4; color: #2a2018; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7); }
   .case-file::before { content: "CASE FILE"; position: absolute; top: -14px; left: 1.5rem; padding: 0.2rem 1rem; border-radius: 4px 4px 0 0; background: #c4b48a; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.2em; }
   .case-file h2 { font-family: var(--serif); font-size: 1.5rem; margin-bottom: 1rem; }
@@ -392,13 +393,24 @@
     </div>
   </div>
 
+  <div class="modal" id="leave-modal">
+    <div class="modal-box modal-dark">
+      <h2>로비로 나갈까요?</h2>
+      <p>지금까지 조사한 내용은 저장되지 않습니다.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost btn-sm" id="leave-cancel">계속 조사</button>
+        <button class="btn btn-primary btn-sm" id="leave-confirm">나가기</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="accuse-modal">
     <div class="modal-box case-file" id="accuse-box">
       <div class="report-head">
-        <div><small>BAEKYAJANG · CASE 01</small><h2>최종 수사 보고서</h2></div>
+        <div><small id="report-code"></small><h2>최종 수사 보고서</h2></div>
         <div class="report-count"><b id="report-clue-count">0</b><small>확보한 단서</small></div>
       </div>
-      <p class="report-intro">한도윤의 죽음에 대한 결론을 기록하세요. 범인과 수법, 동기를 모두 특정해야 합니다.</p>
+      <p class="report-intro" id="report-intro"></p>
       <div id="accuse-questions"></div>
       <div class="report-footer"><p>오답을 제출하면 촛불 하나를 잃습니다.</p><p id="accuse-msg" aria-live="polite"></p></div>
       <div class="modal-actions">
@@ -409,9 +421,6 @@
   </div>
 
   <script src="js/art.js"></script>
-  <script src="js/scenario-mansion.js"></script>
-  <script src="js/scenario-theater.js"></script>
-  <script src="js/scenario-lighthouse.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

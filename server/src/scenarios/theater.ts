@@ -1,6 +1,6 @@
-window.SCENARIOS = window.SCENARIOS || {};
+import type { Scenario } from '../types';
 
-SCENARIOS.theater = {
+export const theater: Scenario = {
   title: '커튼콜',
   intro: [
     '내일이면 팔려 나가는 소극장, 달빛극장.',

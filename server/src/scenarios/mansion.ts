@@ -1,6 +1,6 @@
-window.SCENARIOS = window.SCENARIOS || {};
+import type { Scenario } from '../types';
 
-SCENARIOS.mansion = {
+export const mansion: Scenario = {
   title: '백야장 독살 사건',
   intro: [
     '폭우가 사흘째 그치지 않는 산속 저택, 백야장.',
@@ -165,6 +165,8 @@ SCENARIOS.mansion = {
   ],
 
   accusation: {
+    code: 'BAEKYAJANG · CASE 01',
+    intro: '한도윤의 죽음에 대한 결론을 기록하세요. 범인과 수법, 동기를 모두 특정해야 합니다.',
     questions: [
       { key: 'culprit', label: '범인', options: [
         { id: 'seojin', label: '한서진' }, { id: 'jaeho', label: '윤재호' }, { id: 'miryeong', label: '박미령' }, { id: 'eunwoo', label: '최은우' },

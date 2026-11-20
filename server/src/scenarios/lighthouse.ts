@@ -1,6 +1,6 @@
-window.SCENARIOS = window.SCENARIOS || {};
+import type { Scenario } from '../types';
 
-SCENARIOS.lighthouse = {
+export const lighthouse: Scenario = {
   title: '마지막 불빛',
   intro: [
     '폭풍이 이틀째 섬을 두드리는 남해의 작은 섬, 해무도.',
