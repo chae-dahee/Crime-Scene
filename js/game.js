@@ -3,8 +3,9 @@ const LOBBY = [
   { id: 'theater', title: '커튼콜', tag: '소극장 · 용의자 4명', art: 'theater', desc: '폐관 공연의 마지막 밤, 분장실에서 극단 대표가 숨진 채 발견된다.' },
   { id: 'lighthouse', title: '마지막 불빛', tag: '섬 · 용의자 4명', art: 'lighthouse', desc: '폭풍 치는 밤 등대 불이 꺼졌다. 다음 날 아침, 등대지기가 계단 아래에서 발견된다.' },
 ];
-// 배포 후 Workers 주소로 바꾼다.
-const API_BASE = 'http://localhost:8787';
+const API_BASE = location.hostname === 'localhost'
+  ? 'http://localhost:8787'
+  : 'https://crime-scene-server.crime-scene-server.workers.dev';
 
 const $ = (id) => document.getElementById(id);
 const state = { session: null, scenario: null, clues: new Map(), inspected: new Set(), lives: 0, view: null, presenting: false };
