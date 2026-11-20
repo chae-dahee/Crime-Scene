@@ -5,7 +5,7 @@
   "durable_objects": {
     "bindings": [{ "name": "SESSION", "class_name": "Session" }]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Session"] }],
+  "exports": { "Session": { "type": "durable-object", "storage": "sqlite" } },
   "vars": {
     "ALLOWED_ORIGINS": "https://chae-dahee.github.io,http://localhost:8000"
   }
