@@ -7,6 +7,6 @@
   },
   "exports": { "Session": { "type": "durable-object", "storage": "sqlite" } },
   "vars": {
-    "ALLOWED_ORIGINS": "https://chae-dahee.github.io,http://localhost:8000"
+    "ALLOWED_ORIGINS": "https://chae-dahee.github.io"
   }
 }
