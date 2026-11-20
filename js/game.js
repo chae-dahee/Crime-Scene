@@ -3,12 +3,26 @@ const LOBBY = [
   { id: 'theater', title: '커튼콜', tag: '소극장 · 용의자 4명', art: 'theater', desc: '폐관 공연의 마지막 밤, 분장실에서 극단 대표가 숨진 채 발견된다.' },
   { id: 'lighthouse', title: '마지막 불빛', tag: '섬 · 용의자 4명', art: 'lighthouse', desc: '폭풍 치는 밤 등대 불이 꺼졌다. 다음 날 아침, 등대지기가 계단 아래에서 발견된다.' },
 ];
-const MAX_LIVES = 3;
+// 배포 후 Workers 주소로 바꾼다.
+const API_BASE = 'http://localhost:8787';
 
 const $ = (id) => document.getElementById(id);
-const state = { scenario: null, clues: new Set(), inspected: new Set(), presented: new Set(), lives: MAX_LIVES, view: null, presenting: false };
+const state = { session: null, scenario: null, clues: new Map(), inspected: new Set(), lives: 0, view: null, presenting: false };
 let selectedId = null;
 let typing = null;
+
+async function api(path, body) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(res.status);
+  return res.json();
+}
+
+const act = (action, body) => api(`/sessions/${state.session}/${action}`, body);
+window.addEventListener('unhandledrejection', () => alert('서버와 연결할 수 없습니다.'));
 
 // 화면 전환
 function show(screenId) {
@@ -37,9 +51,9 @@ function renderLobby() {
 }
 
 // 도입부
-function startScenario(id) {
-  const sc = SCENARIOS[id];
-  Object.assign(state, { scenario: sc, clues: new Set(), inspected: new Set(), presented: new Set(), lives: MAX_LIVES, view: null, presenting: false });
+async function startScenario(id) {
+  const sc = await api('/sessions', { scenario: id });
+  Object.assign(state, { session: sc.session, scenario: sc, clues: new Map(), inspected: new Set(), lives: sc.lives, view: null, presenting: false });
   $('intro-title').textContent = sc.title;
   $('intro-text').innerHTML = sc.intro.map((p, i) => `<p style="animation-delay:${0.4 + i * 1.1}s">${p}</p>`).join('');
   $('intro-next').style.animationDelay = `${0.4 + sc.intro.length * 1.1}s`;
@@ -92,12 +106,13 @@ function openLocation(loc) {
     hs.style.left = `${spot.x}%`;
     hs.style.top = `${spot.y}%`;
     hs.innerHTML = `<span class="hs-label">${spot.label}</span>`;
-    hs.addEventListener('click', () => {
+    hs.addEventListener('click', async () => {
+      const r = await act('inspect', { location: loc.id, spot: spot.id });
       const firstInspection = !state.inspected.has(key);
       state.inspected.add(key);
       hs.classList.add('done');
-      say(spot.label, spot.text, () => {
-        if (spot.clue) gainClue(spot.clue);
+      say(spot.label, r.text, () => {
+        if (r.clue) gainClue(r.clue);
         if (firstInspection) showInvestigationToast();
       });
     });
@@ -123,20 +138,15 @@ function suspectChoices(sus) {
   ];
 }
 
-function present(clueId) {
+async function present(clueId) {
   const sus = state.view.sus;
-  const r = sus.reactions[clueId];
   closeNotebook();
+  const r = await act('present', { suspect: sus.id, clue: clueId });
   const portrait = $('scene').querySelector('.portrait');
   portrait.classList.remove('shaken');
   void portrait.offsetWidth;
-  if (r) portrait.classList.add('shaken');
-  const key = `${sus.id}:${clueId}`;
-  const again = r && state.presented.has(key);
-  state.presented.add(key);
-  const text = !r ? sus.fallback : again ? (r.again || sus.pressed || r.text) : r.text;
-  const gives = r && (again ? r.againGives : r.gives);
-  say(sus.name, text, () => { if (gives) gainClue(gives); }, suspectChoices(sus));
+  if (r.reacted) portrait.classList.add('shaken');
+  say(sus.name, r.text, () => { if (r.clue) gainClue(r.clue); }, suspectChoices(sus));
 }
 
 // 대사창 (타자 효과)
@@ -180,20 +190,18 @@ function showInvestigationToast() {
   setTimeout(() => t.remove(), 3200);
 }
 
-function gainClue(id) {
-  if (state.clues.has(id)) return;
-  state.clues.add(id);
+function gainClue(clue) {
+  if (state.clues.has(clue.id)) return;
+  state.clues.set(clue.id, clue);
   renderNotebook();
 }
 
 function renderNotebook() {
-  const ids = [...state.clues];
-  $('clue-count').textContent = ids.length;
-  $('notebook-list').innerHTML = ids.length
-    ? ids.map((id) => {
-      const c = state.scenario.clues[id];
-      return `<li class="clue" data-clue="${id}"><span class="clue-icon">${ART.icon(c.icon)}</span><span><b>${c.name}</b><small>${c.desc}</small></span></li>`;
-    }).join('')
+  const clues = [...state.clues.values()];
+  $('clue-count').textContent = clues.length;
+  $('notebook-list').innerHTML = clues.length
+    ? clues.map((c) =>
+      `<li class="clue" data-clue="${c.id}"><span class="clue-icon">${ART.icon(c.icon)}</span><span><b>${c.name}</b><small>${c.desc}</small></span></li>`).join('')
     : '<li class="empty">아직 기록한 단서가 없다.</li>';
   document.querySelectorAll('[data-clue]').forEach((li) =>
     li.addEventListener('click', () => { if (state.presenting) present(li.dataset.clue); }));
@@ -213,12 +221,14 @@ function closeNotebook() {
 
 // 고발
 function renderLives() {
-  $('lives').innerHTML = Array.from({ length: MAX_LIVES }, (_, i) =>
+  $('lives').innerHTML = Array.from({ length: state.scenario.maxLives }, (_, i) =>
     `<span class="candle${i < state.lives ? '' : ' out'}">${ART.candle}</span>`).join('');
 }
 
 function openAccuse() {
   const acc = state.scenario.accusation;
+  $('report-code').textContent = acc.code;
+  $('report-intro').textContent = acc.intro;
   $('report-clue-count').textContent = state.clues.size;
   $('accuse-questions').innerHTML = acc.questions.map((q) => `
     <fieldset><legend>${q.label}</legend>
@@ -228,32 +238,31 @@ function openAccuse() {
   $('accuse-modal').classList.add('open');
 }
 
-function submitAccuse() {
-  const acc = state.scenario.accusation;
-  const picks = Object.fromEntries(acc.questions.map((q) => [q.key, document.querySelector(`input[name="${q.key}"]:checked`)?.value]));
+async function submitAccuse() {
+  const questions = state.scenario.accusation.questions;
+  const picks = Object.fromEntries(questions.map((q) => [q.key, document.querySelector(`input[name="${q.key}"]:checked`)?.value]));
   if (Object.values(picks).some((v) => !v)) {
-    $('accuse-msg').textContent = '범인, 수법, 동기를 모두 선택하세요.';
+    $('accuse-msg').textContent = '모든 항목을 선택하세요.';
     return;
   }
-  const correct = acc.questions.filter((q) => picks[q.key] === acc.answer[q.key]).length;
-  if (correct === acc.questions.length) return showEnding(true);
-  state.lives--;
+  const r = await act('accuse', { picks });
+  state.lives = r.lives;
   renderLives();
-  if (state.lives === 0) return showEnding(false);
+  if (r.ending) return showEnding(r.ending);
   const box = $('accuse-box');
   box.classList.remove('shake');
   void box.offsetWidth;
   box.classList.add('shake');
-  $('accuse-msg').textContent = `추리가 맞지 않습니다. 단서와 다시 대조하세요. (${correct}/${acc.questions.length} 일치) 촛불 ${state.lives}개가 남았습니다.`;
+  $('accuse-msg').textContent = `추리가 맞지 않습니다. 단서와 다시 대조하세요. (${r.correct}/${r.total} 일치) 촛불 ${state.lives}개가 남았습니다.`;
 }
 
-function showEnding(success) {
+function showEnding({ success, text }) {
   $('accuse-modal').classList.remove('open');
   closeNotebook();
   const ending = $('ending');
   ending.classList.toggle('fail', !success);
   $('stamp').textContent = success ? '사건 해결' : '미해결';
-  $('ending-text').innerHTML = state.scenario.endings[success ? 'success' : 'fail']
+  $('ending-text').innerHTML = text
     .map((p, i) => `<p style="animation-delay:${1 + i * 0.9}s">${p}</p>`).join('');
   show('ending');
 }
@@ -288,8 +297,14 @@ $('notebook-close').addEventListener('click', closeNotebook);
 $('accuse-btn').addEventListener('click', openAccuse);
 $('accuse-submit').addEventListener('click', submitAccuse);
 $('accuse-cancel').addEventListener('click', () => $('accuse-modal').classList.remove('open'));
-$('to-lobby').addEventListener('click', () => show('lobby'));
+$('to-lobby').addEventListener('click', () => $('leave-modal').classList.add('open'));
+$('leave-cancel').addEventListener('click', () => $('leave-modal').classList.remove('open'));
+$('leave-confirm').addEventListener('click', () => {
+  $('leave-modal').classList.remove('open');
+  show('lobby');
+});
 $('ending-lobby').addEventListener('click', () => show('lobby'));
+window.addEventListener('beforeunload', (e) => { if ($('play').classList.contains('active')) e.preventDefault(); });
 document.querySelectorAll('.modal').forEach((m) =>
   m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('open'); }));
 setTimeout(lightning, 3000);
