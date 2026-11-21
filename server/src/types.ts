@@ -42,6 +42,9 @@ export interface Suspect {
   reactions: Record<string, Reaction>;
   fallback: string;
   pressed?: string;
+  // LLM 프롬프트에 그대로 들어가므로 진상을 쓰지 않는다.
+  persona: string;
+  hints: { clue: string; text: string }[];
 }
 
 export interface Question {
@@ -70,7 +73,8 @@ export interface Scenario {
 export interface SessionState {
   scenario: string;
   clues: string[];
-  presented: string[];
+  presented: Record<string, number>;
+  fallbacks: Record<string, number>;
   lives: number;
   finished: boolean;
 }

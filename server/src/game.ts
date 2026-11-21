@@ -2,6 +2,7 @@ import { SCENARIOS } from './scenarios';
 import type { Scenario, SessionState } from './types';
 
 export const MAX_LIVES = 3;
+const HINT_AFTER = 2;
 
 export class GameError extends Error {
   status: number;
@@ -32,7 +33,7 @@ function assertPlaying(state: SessionState) {
 
 export function newState(scenarioId: string): SessionState {
   if (!SCENARIOS[scenarioId]) throw new GameError(404);
-  return { scenario: scenarioId, clues: [], presented: [], lives: MAX_LIVES, finished: false };
+  return { scenario: scenarioId, clues: [], presented: {}, fallbacks: {}, lives: MAX_LIVES, finished: false };
 }
 
 // 클라이언트에 정답과 진행하지 않은 콘텐츠를 보내지 않는다.
@@ -67,10 +68,15 @@ export function present(state: SessionState, suspectId: string, clueId: string) 
   if (!sus) throw new GameError(404);
   if (!state.clues.includes(clueId)) throw new GameError(403);
   const r = sus.reactions[clueId];
-  if (!r) return { text: sus.fallback, reacted: false };
+  if (!r) {
+    const count = state.fallbacks[sus.id] = (state.fallbacks[sus.id] ?? 0) + 1;
+    // 힌트는 조사할 곳만 가리키고 단서를 직접 주지 않는다.
+    const hint = count >= HINT_AFTER ? sus.hints.find((h) => !state.clues.includes(h.clue)) : undefined;
+    return { text: hint?.text ?? sus.fallback, reacted: false };
+  }
   const key = `${sus.id}:${clueId}`;
-  const again = state.presented.includes(key);
-  if (!again) state.presented.push(key);
+  // 횟수에 따른 감정 표현은 LLM이 맡고, 실토 내용은 again·againGives로 고정한다.
+  const again = (state.presented[key] = (state.presented[key] ?? 0) + 1) > 1;
   const text = again ? (r.again || sus.pressed || r.text) : r.text;
   return { text, reacted: true, clue: gain(state, again ? r.againGives : r.gives) };
 }
