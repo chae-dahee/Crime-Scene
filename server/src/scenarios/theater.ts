@@ -31,6 +31,7 @@ export const theater: Scenario = {
     taemin_truth: { name: '태민의 증언', icon: 'voice', desc: '9시 15분에 빚 문제로 분장실에 갔을 때 대표는 살아 있었다. 그 직전 대표의 휴대폰 스피커 너머로 백승희가 "극장을 팔면 가만두지 않겠다"고 소리치는 것을 들었다.' },
     call_record: { name: '대표의 통화 기록', icon: 'phone', desc: '마지막 통화는 9시 12분부터 9시 16분까지 이어졌다. 상대 번호는 조정실 내선이다.' },
     sera_gloves: { name: '세라의 장갑 증언', icon: 'voice', desc: '2막 직전 세라가 화장대에 장갑을 벗어 둘 때 금박은 묻어 있지 않았고, 트로피는 선반 위에 멀쩡히 있었다.' },
+    seunghee_shoes: { name: '승희의 작업화', icon: 'shoe', desc: '백승희가 신은 밑창 두꺼운 작업화. 무대 뒤 분장실 쪽 발자국과 모양이 같고, 밑창 홈에 트로피 금박 가루가 박혀 있다.' },
     seunghee_slip: { name: '승희의 실언', icon: 'voice', desc: '백승희는 2막 암전 중 조정실을 비웠다고 인정했다. 무대 뒤 조명 선을 보러 잠깐 내려갔을 뿐이라고 주장한다.' },
   },
 
@@ -90,9 +91,9 @@ export const theater: Scenario = {
   suspects: [
     {
       id: 'sera', name: '윤세라', role: '주연 배우',
-      portrait: { image: 'assets/scenario4/characters/sera.png' },
+      portrait: { image: 'assets/scenario2/characters/sera.png' },
       intro: '「겨울 정원」의 주연이다. 무대 화장을 지우지 않은 채 팔짱을 끼고 있다.',
-      talk: '이 극단에서 10년을 버텼어요. 오늘 대표님과는 마주친 적도 없어요. 공연 준비만으로도 정신없었으니까요.',
+      talk: '이 극단에서 10년을 버텼어요. 오늘은 공연 준비만으로도 정신없었어요. 대표님 얘기는 하고 싶지 않아요.',
       reactions: {
         yujin_slap: { text: '…그래요, 때렸어요. 저를 빼고 유진이를 세운다잖아요. 그런데 유진이는 왜 그 얘기만 하죠? 2막 암전 때 걔는 자기 자리에 없었어요.', gives: 'sera_counter' },
         cue_sheet: { text: '3분 지연이요? 말도 안 돼요. 저는 큐 램프만 보고 있었어요. 늦은 적 없어요.', again: '또 그 종이예요? …좋아요, 말할게요. 2막 중에 분장실 복도에 있었던 건 태민 씨예요. 제가 입구에서 봤어요.', againGives: 'sera_taemin' },
@@ -109,7 +110,6 @@ export const theater: Scenario = {
       },
       fallback: '그게 저랑 무슨 상관이죠?',
       pressed: '같은 걸 또 보여 주시네요. 결국 저를 범인으로 몰고 싶은 거죠?',
-      persona: '10년 차 주연 배우. 자존심이 강하고 말투가 날카롭다. 주연 교체 소식에 상처받아 공격적으로 반응한다. 몰아붙이면 화를 내며 다른 사람을 끌어들인다.',
       hints: [
         { clue: 'cue_log', text: '그 암전, 무대 위에서는 영원 같았어요. 조정실 콘솔에는 큐가 전부 기록된다던데요.' },
         { clue: 'contract', text: '대표님이 오늘 로비 안내 데스크에 서류 봉투를 두고 가시던데요. 공연 날에 무슨 서류인지.' },
@@ -117,12 +117,12 @@ export const theater: Scenario = {
     },
     {
       id: 'taemin', name: '고태민', role: '조연 배우',
-      portrait: { image: 'assets/scenario4/characters/taemin.png' },
+      portrait: { image: 'assets/scenario2/characters/taemin.png' },
       intro: '극단의 오랜 조연이다. 손을 가만두지 못하고 계속 비빈다.',
-      talk: '저는 2막 내내 무대 뒤에 있었어요. 제 장면을 기다리면서요. 그 이상은 드릴 말씀이 없어요.',
+      talk: '2막 때는 제 장면을 기다리고 있었어요. 그 이상은… 말씀드리기 어려워요.',
       reactions: {
-        sera_taemin: { text: '세라 씨가 잘못 본 거예요. 저는 분장실 근처에도 안 갔어요.', again: '…네, 분장실에 갔어요. 9시 15분쯤이요. 어머니 병원비로 빌린 돈을 조금만 미뤄 달라고 했죠. 그때 대표님은 멀쩡히 살아 계셨어요. 들어가기 직전에 대표님 휴대폰 스피커로 승희 선배가 "극장을 팔면 가만두지 않겠다"고 소리치는 것도 들었어요.', againGives: 'taemin_truth' },
-        phone: { text: '9시 16분이요? 그 시간엔 무대 뒤에 있었어요. 통화 같은 건 몰라요.' },
+        sera_taemin: { text: '세라 씨가 그렇게 말했어요? …그 얘기는 지금 하고 싶지 않아요.', again: '…네, 분장실에 갔어요. 9시 15분쯤이요. 어머니 병원비로 빌린 돈을 조금만 미뤄 달라고 했죠. 그때 대표님은 멀쩡히 살아 계셨어요. 들어가기 직전에 대표님 휴대폰 스피커로 승희 선배가 "극장을 팔면 가만두지 않겠다"고 소리치는 것도 들었어요.', againGives: 'taemin_truth' },
+        phone: { text: '9시 16분이요? …그 시간 얘기는 지금 드리기 어려워요.' },
         contract: { text: '극장을 판다고요? 그럼 우린 다 어떻게 되는 거예요.' },
         iou: { text: '…그건 오늘 미뤄 달라고 부탁드리려던 거예요. 갚을 생각은 있었어요. 정말이에요.' },
         trophy: { text: '저는 그 트로피에 손댄 적도 없어요. 대표님이 그걸 얼마나 아끼셨는데요.' },
@@ -130,12 +130,11 @@ export const theater: Scenario = {
         cue_log: { text: '그 암전 때 저는 무대 뒤에 있었어요. 너무 길어서 사고가 난 줄 알았어요.' },
         gloves: { text: '목장갑이요? 그런 건 극장 여기저기 굴러다녀요. 누구 건지 모르겠어요.' },
         cue_sheet: { text: '세라 씨가 늦었다고요? 글쎄요, 그때 저는 무대 뒤에 없어서… 아, 아니에요. 잘 모르겠어요.' },
-        fallen_chair: { text: '제, 제가 그걸 어떻게 알아요. 저는 분장실에 안 갔다니까요.' },
-        work_footprints: { text: '저, 저는 무대 뒤에 있었다고 했잖아요. 발자국이야 당연히 있겠죠.' },
+        fallen_chair: { text: '제, 제가 그걸 어떻게… 그 얘기는 하지 말아 주세요.' },
+        work_footprints: { text: '발자국이요? 무대 뒤는 다들 지나다니는 곳이에요.' },
       },
       fallback: '잘 모르겠어요.',
       pressed: '그건 이미 말씀드렸잖아요. 왜 자꾸 저한테만 물으세요?',
-      persona: '극단의 오랜 조연 배우. 말을 더듬고 손을 비비며 불안해한다. 개인 사정이 드러날까 두려워 말을 돌린다. 몰아붙이면 버티지 못하고 목소리가 떨린다.',
       hints: [
         { clue: 'gloves', text: '공연 끝나고 정리할 때 쓰는 장갑은 조정실에 모아 둬요.' },
         { clue: 'phone', text: '대표님은 공연 중에도 휴대폰을 손에서 놓지 않으셨어요. 분장실 어딘가에 있을 거예요.' },
@@ -143,7 +142,7 @@ export const theater: Scenario = {
     },
     {
       id: 'seunghee', name: '백승희', role: '무대감독',
-      portrait: { image: 'assets/scenario4/characters/seunghee.png' },
+      portrait: { image: 'assets/scenario2/characters/seunghee.png' },
       intro: '20년 동안 이 극장의 무대를 맡아 온 무대감독이다. 침착하게 큐시트를 넘기고 있다.',
       talk: '저는 공연 내내 조정실을 떠나지 않았어요. 기록이 다 남아 있으니 필요하면 보세요.',
       reactions: {
@@ -159,12 +158,12 @@ export const theater: Scenario = {
         phone: { text: '9시 16분이면 2막 중반이에요. 저는 조정실에서 큐를 잡고 있었어요.' },
         fallen_chair: { text: '대표님은 화가 나면 의자부터 밀치고 일어나셨어요. 인터미션에 세라 씨가 분장실에서 소리치는 게 무전으로도 들렸죠.' },
         white_gloves: { text: '배우들 장갑이에요. 금박이 묻었으면 그쪽부터 보시죠.' },
-        work_footprints: { text: '큰 신발이네요. 오늘 분장실 쪽을 드나든 남자가 누군지 생각해 보세요.' },
+        work_footprints: { text: '큰 신발이네요. 오늘 분장실 쪽을 드나든 남자가 누군지 생각해 보세요.', again: '제 신발이라도 보시겠어요? 마음대로 하세요. 무대 일 하는 사람 신발은 다 이래요.', againGives: 'seunghee_shoes' },
+        seunghee_shoes: { text: '무대 일 하는 사람 신발에 금박 가루쯤은 묻어요. 오늘 소품 정리를 몇 번이나 했는데요.' },
         iou: { text: '태민이 오늘 아침에도 대표님께 사정하더군요. 기한이 오늘이었으니까요.' },
       },
       fallback: '기록에 없는 건 말씀드릴 수 없어요.',
       pressed: '같은 질문에는 같은 답밖에 없어요.',
-      persona: '20년 동안 이 극장의 무대를 맡은 무대감독. 침착하고 사무적인 존댓말로 기록과 절차를 근거로 든다. 극장에 대한 애착이 깊다. 추궁이 반복되면 짧게 같은 답을 되풀이한다.',
       hints: [
         { clue: 'white_gloves', text: '분장실 화장대에 배우 장갑이 놓여 있던데요. 누가 언제 벗어 뒀는지 보세요.' },
         { clue: 'work_footprints', text: '무대 뒤 바닥은 먼지가 많아서 누가 지나가면 다 남아요.' },
@@ -172,12 +171,12 @@ export const theater: Scenario = {
     },
     {
       id: 'yujin', name: '차유진', role: '신입 배우',
-      portrait: { image: 'assets/scenario4/characters/yujin.png' },
+      portrait: { image: 'assets/scenario2/characters/yujin.png' },
       intro: '입단 1년 차 신입 배우다. 다음 시즌 주연으로 내정되었다는 소문이 돌고 있다.',
-      talk: '저는 2막 내내 무대 입구에서 대기했어요. 시키는 대로 했을 뿐이에요.',
+      talk: '2막 때요? …저는 시키는 대로 했을 뿐이에요. 더는 말씀드리기 어려워요.',
       reactions: {
         script_memo: { text: '저도 오늘 처음 알았어요. 그런데 인터미션에 세라 선배가 대표님 뺨을 때리는 걸 봤어요. 그 얘기를 들은 것 같았어요.', gives: 'yujin_slap', again: '…사실 오늘 대표님이 주연 얘기는 없던 일로 하자고 하셨어요. 사정이 생겼다면서요. 이유는 말씀 안 해 주셨어요.' },
-        sera_counter: { text: '서, 선배가 잘못 본 거예요. 저는 제 자리에 있었어요.', again: '…죄송해요. 암전 때 랜턴을 떨어뜨려서 무대 옆에 숨어 있었어요. 혼날까 봐 말을 못 했어요. 그때 조정실 창을 올려다봤는데 아무도 없었어요. 세라 선배는 입구에서 큐를 기다리고 있었고요.', againGives: 'yujin_truth' },
+        sera_counter: { text: '그, 그건… 지금은 말씀드리기 어려워요.', again: '…죄송해요. 암전 때 랜턴을 떨어뜨려서 무대 옆에 숨어 있었어요. 혼날까 봐 말을 못 했어요. 그때 조정실 창을 올려다봤는데 아무도 없었어요. 세라 선배는 입구에서 큐를 기다리고 있었고요.', againGives: 'yujin_truth' },
         lantern: { text: '그, 그건… 제가 들고 나가는 소품이에요. 그냥 손에서 미끄러진 거예요.' },
         cue_sheet: { text: '세라 선배가 늦었다고요? 저는… 잘 모르겠어요.' },
         cue_log: { text: '암전이 그렇게 길었어요? 저는… 잘 기억이 안 나요.' },
@@ -189,7 +188,6 @@ export const theater: Scenario = {
       },
       fallback: '잘 모르겠어요.',
       pressed: '그건 정말 말씀드린 게 다예요.',
-      persona: '입단 1년 차 신입 배우. 수줍게 말끝을 흐리며 선배들 눈치를 본다. 자기 실수를 숨기고 있어 겁먹은 채 답한다. 몰아붙이면 울먹인다.',
       hints: [
         { clue: 'lantern', text: '2막 소품이… 무대 옆 어딘가에 있을 거예요. 아, 아니에요.' },
         { clue: 'iou', text: '대표님은 중요한 서류를 분장실 화장대 서랍에 넣어 두세요.' },
