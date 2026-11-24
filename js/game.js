@@ -13,13 +13,18 @@ let selectedId = null;
 let typing = null;
 
 async function api(path, body) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(res.status);
-  return res.json();
+  document.body.classList.add('loading');
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(res.status);
+    return await res.json();
+  } finally {
+    document.body.classList.remove('loading');
+  }
 }
 
 const act = (action, body) => api(`/sessions/${state.session}/${action}`, body);
