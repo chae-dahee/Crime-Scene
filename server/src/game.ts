@@ -75,9 +75,9 @@ export function present(state: SessionState, suspectId: string, clueId: string) 
     return { text: hint?.text ?? sus.fallback, reacted: false };
   }
   const key = `${sus.id}:${clueId}`;
-  // 횟수에 따른 감정 표현은 LLM이 맡고, 실토 내용은 again·againGives로 고정한다.
   const again = (state.presented[key] = (state.presented[key] ?? 0) + 1) > 1;
-  const text = again ? (r.again || sus.pressed || r.text) : r.text;
+  const text = r.known && state.clues.includes(r.known.clue) ? r.known.text
+    : again ? (r.again || sus.pressed || r.text) : r.text;
   return { text, reacted: true, clue: gain(state, again ? r.againGives : r.gives) };
 }
 

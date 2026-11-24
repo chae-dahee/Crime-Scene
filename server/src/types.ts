@@ -30,6 +30,8 @@ export interface Reaction {
   gives?: string;
   again?: string;
   againGives?: string;
+  // 숨기던 사실이 이미 밝혀진 뒤에는 다시 숨기지 않도록 대사를 바꾼다.
+  known?: { clue: string; text: string };
 }
 
 export interface Suspect {
@@ -42,8 +44,6 @@ export interface Suspect {
   reactions: Record<string, Reaction>;
   fallback: string;
   pressed?: string;
-  // LLM 프롬프트에 그대로 들어가므로 진상을 쓰지 않는다.
-  persona: string;
   hints: { clue: string; text: string }[];
 }
 

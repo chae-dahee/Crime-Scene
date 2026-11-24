@@ -171,6 +171,11 @@
   #dialog-text { font-family: var(--serif); font-size: 1.05rem; line-height: 1.75; min-height: 3.5em; }
   #dialog.typing::after { content: "▼"; position: absolute; right: 1rem; bottom: 0.6rem; color: var(--gold); font-size: 0.7rem; animation: blink 0.8s infinite; }
   @keyframes blink { 50% { opacity: 0; } }
+
+  /* 요청 대기 중 클릭을 막아 중복 요청을 방지한다. */
+  body.loading::before { content: ""; position: fixed; inset: 0; z-index: 999; cursor: progress; }
+  body.loading::after { content: ""; position: fixed; top: 50%; left: 50%; z-index: 1000; width: 2.4rem; height: 2.4rem; margin: -1.2rem 0 0 -1.2rem; border: 3px solid rgba(201, 164, 92, 0.25); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
   #dialog-choices { display: flex; gap: 0.6rem; margin-top: 0.6rem; }
   .choice { padding: 0.45rem 1rem; border: 1px solid #6a5a44; border-radius: 4px; background: rgba(0, 0, 0, 0.35); transition: all 0.15s; animation: rise 0.3s both; }
   .choice::before { content: "▸ "; color: var(--gold); }
