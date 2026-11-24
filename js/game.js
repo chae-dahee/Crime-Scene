@@ -8,7 +8,7 @@ const API_BASE = location.hostname === 'localhost'
   : 'https://crime-scene-server.crime-scene-server.workers.dev';
 
 const $ = (id) => document.getElementById(id);
-const state = { session: null, scenario: null, clues: new Map(), inspected: new Set(), lives: 0, view: null, presenting: false };
+const state = { session: null, scenario: null, clues: new Map(), inspected: new Set(), lives: 0, view: null };
 let selectedId = null;
 let typing = null;
 
@@ -59,21 +59,40 @@ function renderLobby() {
 // 도입부
 async function startScenario(id) {
   const sc = await api('/sessions', { scenario: id });
-  Object.assign(state, { session: sc.session, scenario: sc, clues: new Map(), inspected: new Set(), lives: sc.lives, view: null, presenting: false });
+  Object.assign(state, { session: sc.session, scenarioId: id, scenario: sc, clues: new Map(), inspected: new Set(), lives: sc.lives, view: null });
   $('intro-title').textContent = sc.title;
   $('intro-text').innerHTML = sc.intro.map((p, i) => `<p style="animation-delay:${0.4 + i * 1.1}s">${p}</p>`).join('');
   $('intro-next').style.animationDelay = `${0.4 + sc.intro.length * 1.1}s`;
   show('intro');
 }
 
+const currentMap = () => MAPS[state.scenarioId];
+
 function enterPlay() {
   const sc = state.scenario;
+  const map = currentMap();
   $('play-title').textContent = sc.title;
+  $('play').classList.toggle('has-map', Boolean(map));
   renderNav();
   renderLives();
-  renderNotebook();
+  renderClues();
   show('play');
-  openLocation(sc.locations.find((l) => l.id === sc.start));
+  if (map) {
+    Minimap.init(state.scenarioId, sc.locations, (id) => openLocation(sc.locations.find((l) => l.id === id)));
+    openMap();
+  } else {
+    openLocation(sc.locations.find((l) => l.id === sc.start));
+  }
+}
+
+// 탐색 맵
+function openMap() {
+  state.view = { type: 'map' };
+  setTarget(null);
+  $('dialog').classList.remove('shown');
+  $('leave-room').hidden = true;
+  enterScene('<div class="map-stage"></div>', true);
+  Minimap.render($('scene').querySelector('.map-stage'));
 }
 
 // 좌측 내비게이션
@@ -92,9 +111,10 @@ function markNav(key, id) {
   document.querySelectorAll('.nav-btn, .nav-suspect').forEach((b) => b.classList.toggle('active', b.dataset[key] === id));
 }
 
-function enterScene(html) {
+function enterScene(html, mapMode = false) {
   const scene = $('scene');
   scene.innerHTML = html;
+  scene.classList.toggle('map-mode', mapMode);
   scene.classList.remove('enter');
   void scene.offsetWidth;
   scene.classList.add('enter');
@@ -103,6 +123,9 @@ function enterScene(html) {
 // 장소 탐색
 function openLocation(loc) {
   state.view = { type: 'location', loc };
+  setTarget(null);
+  const map = currentMap();
+  $('leave-room').hidden = !map;
   markNav('loc', loc.id);
   enterScene(`<div class="scene-art">${ART.scenes[loc.art]}</div><div class="scene-name">${loc.name}</div>`);
   loc.spots.forEach((spot) => {
@@ -124,12 +147,44 @@ function openLocation(loc) {
     });
     $('scene').appendChild(hs);
   });
+  if (map) {
+    state.scenario.suspects.filter((s) => map.suspects[s.id] === loc.id).forEach((sus) => {
+      const fig = document.createElement('button');
+      fig.className = 'room-suspect';
+      fig.style.left = `${map.stand[sus.id]}%`;
+      fig.innerHTML = `${ART.portrait(sus.portrait)}<span class="tag">${sus.name}</span>`;
+      fig.addEventListener('click', () => talkInRoom(sus, fig));
+      $('scene').appendChild(fig);
+    });
+  }
   say('', loc.desc);
+}
+
+// 맵 시나리오는 별도 심문 화면 없이 방 안에서 대화한다.
+function talkInRoom(sus, fig) {
+  if (state.view.sus) return;
+  state.view.sus = sus;
+  setTarget(sus);
+  Minimap.meet(sus);
+  fig.classList.add('active');
+  $('scene').classList.add('talking');
+  say('', sus.intro, null, suspectChoices(sus));
+}
+
+function stepBack(sus) {
+  state.view.sus = null;
+  setTarget(null);
+  $('scene').classList.remove('talking');
+  const fig = $('scene').querySelector('.room-suspect.active');
+  fig.classList.remove('active');
+  fig.blur();
+  say('', `${sus.name}에게서 물러났다.`);
 }
 
 // 심문
 function openSuspect(sus) {
   state.view = { type: 'suspect', sus };
+  setTarget(sus);
   markNav('sus', sus.id);
   enterScene(`<div class="scene-art dim">${ART.scenes[state.scenario.interrogation || 'interrogation']}</div>
     <div class="portrait">${ART.portrait(sus.portrait)}</div>
@@ -138,17 +193,17 @@ function openSuspect(sus) {
 }
 
 function suspectChoices(sus) {
-  return [
+  const choices = [
     { label: '이야기를 듣는다', run: () => say(sus.name, sus.talk, null, suspectChoices(sus)) },
-    { label: '단서를 제시한다', run: () => openNotebook(true) },
   ];
+  if (currentMap()) choices.push({ label: '물러난다', key: 'Esc', run: () => stepBack(sus) });
+  return choices;
 }
 
 async function present(clueId) {
   const sus = state.view.sus;
-  closeNotebook();
   const r = await act('present', { suspect: sus.id, clue: clueId });
-  const portrait = $('scene').querySelector('.portrait');
+  const portrait = $('scene').querySelector('.portrait, .room-suspect.active');
   portrait.classList.remove('shaken');
   void portrait.offsetWidth;
   if (r.reacted) portrait.classList.add('shaken');
@@ -178,6 +233,7 @@ function say(speaker, text, onDone, choices = []) {
       const b = document.createElement('button');
       b.className = 'choice';
       b.textContent = c.label;
+      if (c.key) b.dataset.key = c.key;
       b.addEventListener('click', (e) => { e.stopPropagation(); c.run(); });
       $('dialog-choices').appendChild(b);
     });
@@ -187,7 +243,7 @@ function say(speaker, text, onDone, choices = []) {
   $('dialog').classList.add('typing');
 }
 
-// 단서와 수첩
+// 단서
 function showInvestigationToast() {
   const t = document.createElement('div');
   t.className = 'toast';
@@ -199,30 +255,29 @@ function showInvestigationToast() {
 function gainClue(clue) {
   if (state.clues.has(clue.id)) return;
   state.clues.set(clue.id, clue);
-  renderNotebook();
+  renderClues();
 }
 
-function renderNotebook() {
+function renderClues() {
   const clues = [...state.clues.values()];
   $('clue-count').textContent = clues.length;
-  $('notebook-list').innerHTML = clues.length
+  $('clue-list').innerHTML = clues.length
     ? clues.map((c) =>
-      `<li class="clue" data-clue="${c.id}"><span class="clue-icon">${ART.icon(c.icon)}</span><span><b>${c.name}</b><small>${c.desc}</small></span></li>`).join('')
-    : '<li class="empty">아직 기록한 단서가 없다.</li>';
-  document.querySelectorAll('[data-clue]').forEach((li) =>
-    li.addEventListener('click', () => { if (state.presenting) present(li.dataset.clue); }));
+      `<li><button class="clue" data-clue="${c.id}"><span class="clue-icon">${ART.icon(c.icon)}</span><b>${c.name}</b></button></li>`).join('')
+    : '<li class="empty">아직 모은 단서가 없다.</li>';
+  $('clue-list').querySelectorAll('[data-clue]').forEach((b) =>
+    b.addEventListener('click', () => pickClue(state.clues.get(b.dataset.clue))));
 }
 
-function openNotebook(presenting = false) {
-  state.presenting = presenting;
-  $('notebook').classList.toggle('presenting', presenting);
-  $('notebook-title').textContent = presenting ? `${state.view.sus.name}에게 제시할 단서` : '수첩';
-  $('notebook').classList.add('open');
+function pickClue(clue) {
+  if (state.view.sus) return present(clue.id);
+  $('dialog').classList.add('shown');
+  say(clue.name, clue.desc);
 }
 
-function closeNotebook() {
-  state.presenting = false;
-  $('notebook').classList.remove('open');
+function setTarget(sus) {
+  $('clue-panel').classList.toggle('presenting', Boolean(sus));
+  $('clue-head').textContent = sus ? `${sus.name}에게 제시할 단서` : '단서';
 }
 
 // 고발
@@ -264,7 +319,6 @@ async function submitAccuse() {
 
 function showEnding({ success, text }) {
   $('accuse-modal').classList.remove('open');
-  closeNotebook();
   const ending = $('ending');
   ending.classList.toggle('fail', !success);
   $('stamp').textContent = success ? '사건 해결' : '미해결';
@@ -298,9 +352,19 @@ $('help').addEventListener('click', () => $('help-modal').classList.add('open'))
 $('help-close').addEventListener('click', () => $('help-modal').classList.remove('open'));
 $('intro-next').addEventListener('click', enterPlay);
 $('dialog').addEventListener('click', () => { if (typing) typing.finish(); });
-$('notebook-btn').addEventListener('click', () => openNotebook(false));
-$('notebook-close').addEventListener('click', closeNotebook);
 $('accuse-btn').addEventListener('click', openAccuse);
+$('leave-room').addEventListener('click', openMap);
+const narrow = matchMedia('(max-width: 860px)');
+const placeClues = () => (narrow.matches ? $('scene').before($('clue-panel')) : $('accuse-btn').parentElement.before($('clue-panel')));
+narrow.addEventListener('change', placeClues);
+placeClues();
+// Esc는 대화 → 방 → 맵 순으로 한 단계씩 물러난다.
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || !currentMap() || !$('play').classList.contains('active')) return;
+  if (document.querySelector('.modal.open')) return;
+  if (state.view.sus) stepBack(state.view.sus);
+  else if (state.view.type === 'location') openMap();
+});
 $('accuse-submit').addEventListener('click', submitAccuse);
 $('accuse-cancel').addEventListener('click', () => $('accuse-modal').classList.remove('open'));
 $('to-lobby').addEventListener('click', () => $('leave-modal').classList.add('open'));

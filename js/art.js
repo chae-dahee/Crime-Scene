@@ -367,5 +367,188 @@ const ART = (() => {
   const candle = `<svg viewBox="0 0 24 40"><path class="flame" d="M12 2 C16 9 15 13 12 14 C9 13 8 9 12 2Z" fill="#ffcf6a"/><rect x="8" y="15" width="8" height="22" rx="1" fill="#efe6d2"/><line x1="12" y1="14" x2="12" y2="16" stroke="#333"/></svg>`;
   const lock = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 
-  return { scenes, portrait, icon, candle, lock };
+  // 미니맵 평면도. 조사 지점의 힌트가 되지 않도록 가구와 소품은 그리지 않는다.
+  const fpLine = '#d5b878';
+  const vdoor = (x, y, side) => `<rect x="${x - 4}" y="${y}" width="8" height="24" fill="#2b2018"/>
+    <path d="M${x} ${y}h${side * 24}" stroke="${fpLine}" stroke-width="1.4"/>
+    <path d="M${x + side * 24} ${y}A24 24 0 0 ${side > 0 ? 1 : 0} ${x} ${y + 24}" fill="none" stroke="${fpLine}" stroke-width="0.7" stroke-dasharray="2 2"/>`;
+  const hdoor = (x, y, side) => `<rect x="${x}" y="${y - 4}" width="24" height="8" fill="#2b2018"/>
+    <path d="M${x} ${y}v${side * 24}" stroke="${fpLine}" stroke-width="1.4"/>
+    <path d="M${x} ${y + side * 24}A24 24 0 0 ${side > 0 ? 0 : 1} ${x + 24} ${y}" fill="none" stroke="${fpLine}" stroke-width="0.7" stroke-dasharray="2 2"/>`;
+  const win = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#1d2c3c" stroke="#8aa0b8" stroke-width="0.8"/>
+    <path d="${w > h ? `M${x} ${y + h / 2}h${w}` : `M${x + w / 2} ${y}v${h}`}" stroke="#8aa0b8" stroke-width="0.5"/>`;
+  const steps = (x, y, n) => `<rect x="${x}" y="${y}" width="56" height="${n * 6 + 2}" fill="#3a2a1e" stroke="#7a6244" stroke-width="0.6"/>
+    ${Array.from({ length: n }, (_, i) => `<path d="M${x + 2} ${y + 4 + i * 6}h52" stroke="#20160f" stroke-width="1"/>`).join('')}`;
+  const fpLabel = (x, y, text, size = 12) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="${size}" font-family="Nanum Myeongjo, AppleMyungjo, Batang, serif"
+    fill="#f1e2bd" stroke="#1a130e" stroke-width="3" paint-order="stroke" letter-spacing="1">${text}</text>`;
+  const lamp = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#fp-lamp)"/>`;
+  const walls1 = 'M20 160H340V420H20Z M140 160V420 M220 160V420 M20 280H140 M220 280H340';
+  const walls2 = 'M60 20H300V130H60Z M120 20V80 M180 20V80 M240 20V80 M60 80H300';
+
+  const pat = (id, w, h, body, extra = '') => `<pattern id="${id}" width="${w}" height="${h}" patternUnits="userSpaceOnUse"${extra}>${body}</pattern>`;
+  const fpBaseDefs = `
+    <pattern id="fp-grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#2a221b" stroke-width="0.5"/></pattern>
+    <pattern id="fp-plank" width="40" height="8" patternUnits="userSpaceOnUse"><rect width="40" height="8" fill="#4a3322"/><path d="M0 8h40M14 0v8" stroke="#33231a" stroke-width="0.6"/></pattern>
+    <pattern id="fp-carpet" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#5e1d1d"/><path d="M5 1l4 4-4 4-4-4z" fill="none" stroke="#8a3a2c" stroke-width="0.6"/></pattern>
+    <radialGradient id="fp-lamp"><stop offset="0" stop-color="#ffd58a" stop-opacity="0.2"/><stop offset="1" stop-color="#ffd58a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="fp-vignette" r="75%"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.6"/></radialGradient>`;
+  const compass = (x, y) => `<g transform="translate(${x} ${y})">
+    <circle r="10" fill="none" stroke="#8c7149" stroke-width="0.8"/>
+    <path d="M0 -9L3 0H-3Z" fill="${fpLine}"/><path d="M0 9L3 0H-3Z" fill="#5a4a36"/>
+  </g>`;
+  const vignette = '<rect width="360" height="460" fill="url(#fp-vignette)"/>';
+
+  const floorplan = {
+    mansion: svg(`
+      <defs>
+        ${fpBaseDefs}
+        <pattern id="fp-parquet" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="12" fill="#5c3f28"/><rect width="6" height="12" fill="#6a4a30"/><path d="M6 0v12M0 6h6M6 3h6M6 9h6" stroke="#3b2717" stroke-width="0.5"/></pattern>
+        <pattern id="fp-check" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#857559"/><path d="M0 0h7v7H0zM7 7h7v7H7z" fill="#3c342b"/></pattern>
+        <pattern id="fp-tile" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#9c988b"/><path d="M0 0h10M0 0v10" stroke="#7a7669" stroke-width="0.6"/></pattern>
+        <pattern id="fp-glass" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#26402f"/><path d="M0 0h16M0 0v16" stroke="#8fbf98" stroke-width="0.6" opacity="0.6"/><path d="M3 12l6-6" stroke="#cfe8d2" stroke-width="0.5" opacity="0.25"/></pattern>
+      </defs>
+      <rect width="360" height="460" fill="#16120e"/>
+      <rect width="360" height="460" fill="url(#fp-grid)"/>
+      <rect x="26" y="166" width="320" height="260" fill="#000" opacity="0.4"/>
+      <rect x="66" y="26" width="240" height="110" fill="#000" opacity="0.4"/>
+
+      <rect x="20" y="160" width="120" height="120" fill="url(#fp-parquet)"/>
+      <rect x="220" y="160" width="120" height="120" fill="url(#fp-check)"/>
+      <rect x="20" y="280" width="120" height="140" fill="url(#fp-glass)"/>
+      <rect x="220" y="280" width="120" height="140" fill="url(#fp-tile)"/>
+      <rect x="140" y="160" width="80" height="260" fill="url(#fp-plank)"/>
+      <rect x="164" y="212" width="32" height="206" fill="url(#fp-carpet)" stroke="#b08a4a" stroke-width="0.7"/>
+      ${steps(152, 164, 7)}
+      <rect x="60" y="20" width="240" height="110" fill="url(#fp-plank)"/>
+      <rect x="60" y="20" width="240" height="60" fill="#2a1d14" opacity="0.35"/>
+      <rect x="68" y="86" width="224" height="38" fill="url(#fp-carpet)" opacity="0.8" stroke="#b08a4a" stroke-width="0.7"/>
+      ${steps(152, 86, 6)}
+      ${lamp(80, 220, 60)}${lamp(280, 220, 60)}${lamp(80, 350, 66)}${lamp(280, 350, 66)}${lamp(180, 300, 50)}${lamp(180, 60, 90)}
+
+      <path d="${walls1} ${walls2}" fill="none" stroke="#130e0a" stroke-width="7"/>
+      <path d="${walls1} ${walls2}" fill="none" stroke="#8c7149" stroke-width="1.2"/>
+      <rect x="168" y="126" width="24" height="8" fill="#2b2018"/>
+      <path d="M180 134V158" stroke="${fpLine}" stroke-width="1" stroke-dasharray="3 3" opacity="0.7"/>
+
+      ${vdoor(140, 198, -1)}${vdoor(220, 198, 1)}${vdoor(140, 338, -1)}${vdoor(220, 338, 1)}
+      ${hdoor(168, 420, -1)}
+      ${hdoor(78, 80, -1)}${hdoor(138, 80, -1)}${hdoor(198, 80, -1)}${hdoor(258, 80, -1)}
+      ${win(17, 190, 6, 60)}${win(40, 157, 70, 6)}${win(250, 157, 70, 6)}${win(337, 190, 6, 60)}${win(337, 310, 6, 80)}
+      ${win(17, 290, 6, 120)}${win(30, 417, 100, 6)}
+      ${win(75, 17, 30, 6)}${win(135, 17, 30, 6)}${win(195, 17, 30, 6)}${win(255, 17, 30, 6)}
+
+      ${fpLabel(80, 184, '서재')}${fpLabel(280, 184, '주방')}${fpLabel(80, 304, '온실')}${fpLabel(280, 304, '의무실')}
+      ${fpLabel(180, 56, '2층 객실')}${fpLabel(180, 448, '정문', 9)}${fpLabel(180, 150, '계단', 8)}
+      <text x="22" y="152" font-size="9" fill="#9b8565" letter-spacing="2">1F</text>
+      <text x="62" y="13" font-size="9" fill="#9b8565" letter-spacing="2">2F</text>
+      ${compass(334, 440)}
+      ${vignette}
+    `, '0 0 360 460'),
+
+    theater: svg(`
+      <defs>
+        ${fpBaseDefs}
+        ${pat('th-stage', 40, 10, '<rect width="40" height="10" fill="#7a5634"/><path d="M0 10h40M22 0v10" stroke="#5a3d24" stroke-width="0.6"/>')}
+        ${pat('th-rose', 12, 12, '<rect width="12" height="12" fill="#4a2630"/><circle cx="6" cy="6" r="2" fill="none" stroke="#7a4050" stroke-width="0.6"/>')}
+        ${pat('th-concrete', 18, 18, '<rect width="18" height="18" fill="#45423d"/><circle cx="4" cy="5" r="0.7" fill="#5a5750"/><circle cx="13" cy="12" r="0.9" fill="#3a3833"/><path d="M0 18h18" stroke="#3a3833" stroke-width="0.5"/>')}
+        ${pat('th-rubber', 8, 8, '<rect width="8" height="8" fill="#26282b"/><circle cx="4" cy="4" r="1.2" fill="#323539"/>')}
+        ${pat('th-marble', 20, 20, '<rect width="20" height="20" fill="#8c8270"/><path d="M0 0h10v10H0zM10 10h10v10H10z" fill="#6e6656"/>', ' patternTransform="rotate(45)"')}
+        <radialGradient id="th-spot"><stop offset="0" stop-color="#fff1c8" stop-opacity="0.3"/><stop offset="1" stop-color="#fff1c8" stop-opacity="0"/></radialGradient>
+      </defs>
+      <rect width="360" height="460" fill="#16120e"/>
+      <rect width="360" height="460" fill="url(#fp-grid)"/>
+      <rect x="26" y="26" width="320" height="420" fill="#000" opacity="0.4"/>
+
+      <rect x="20" y="20" width="60" height="130" fill="url(#th-rose)"/>
+      <rect x="80" y="20" width="260" height="50" fill="url(#th-concrete)"/>
+      <rect x="110" y="70" width="190" height="130" fill="url(#th-stage)"/>
+      <rect x="110" y="70" width="152" height="8" fill="#5e1717"/><rect x="286" y="70" width="14" height="8" fill="#5e1717"/>
+      <rect x="80" y="70" width="30" height="310" fill="url(#fp-plank)"/>
+      <rect x="110" y="200" width="190" height="50" fill="url(#fp-plank)"/>
+      <rect x="114" y="216" width="182" height="18" fill="url(#fp-carpet)" stroke="#b08a4a" stroke-width="0.7"/>
+      <rect x="110" y="250" width="110" height="90" fill="#1d1513"/><rect x="110" y="340" width="90" height="40" fill="#1d1513"/>
+      ${Array.from({ length: 10 }, (_, r) => 258 + r * 12).map((y) => Array.from({ length: y < 334 ? 10 : 8 }, (_, c) => 116 + c * 10)
+        .map((x) => `<rect x="${x}" y="${y}" width="8" height="7" rx="1.5" fill="#4a1c1c" stroke="#2a0e0e" stroke-width="0.6"/>`).join('')).join('')}
+      <rect x="300" y="70" width="40" height="180" fill="#3a2a1e"/>
+      ${Array.from({ length: 22 }, (_, i) => `<path d="M302 ${76 + i * 8}h36" stroke="#20160f" stroke-width="1"/>`).join('')}
+      <rect x="220" y="250" width="120" height="80" fill="url(#th-rubber)"/>
+      <rect x="225" y="255" width="110" height="70" fill="none" stroke="#8aa0b8" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.6"/>
+      <rect x="220" y="330" width="120" height="10" fill="#0f0c0a"/>
+      <rect x="200" y="340" width="140" height="100" fill="url(#th-marble)"/>
+      <rect x="80" y="380" width="120" height="60" fill="url(#th-marble)"/>
+      <rect x="20" y="150" width="60" height="290" fill="#0f0c0a"/>
+      <circle cx="205" cy="135" r="60" fill="url(#th-spot)"/>
+      ${lamp(50, 85, 40)}${lamp(210, 45, 50)}${lamp(280, 290, 45)}${lamp(270, 395, 55)}${lamp(140, 410, 40)}
+
+      <path d="M20 20H340V440H20Z M80 20V440 M20 150H80 M110 70V200 M110 250V380 M110 380H200 M300 70V250 M220 250H300 M220 250V330 M220 330H340 M200 340V440 M200 340H340" fill="none" stroke="#130e0a" stroke-width="7"/>
+      <path d="M20 20H340V440H20Z M80 20V440 M20 150H80 M110 70V200 M110 250V380 M110 380H200 M300 70V250 M220 250H300 M220 250V330 M220 330H340 M200 340V440 M200 340H340" fill="none" stroke="#8c7149" stroke-width="1.2"/>
+      ${vdoor(80, 30, -1)}${vdoor(200, 396, 1)}${hdoor(128, 440, -1)}
+      ${win(337, 360, 6, 60)}
+
+      ${fpLabel(50, 96, '분장실', 11)}${fpLabel(210, 42, '무대 뒤', 11)}${fpLabel(205, 140, '무대')}
+      ${fpLabel(320, 160, '계단', 9)}${fpLabel(280, 286, '조정실', 11)}${fpLabel(280, 300, '위층', 8)}
+      ${fpLabel(275, 392, '로비', 11)}${fpLabel(140, 455, '출입구', 9)}
+      ${compass(330, 451)}
+      ${vignette}
+    `, '0 0 360 460'),
+
+    lighthouse: svg(`
+      <defs>
+        ${fpBaseDefs}
+        ${pat('is-sea', 40, 20, '<rect width="40" height="20" fill="#0f1f2b"/><path d="M0 12q5-4 10 0t10 0t10 0t10 0" fill="none" stroke="#24435a" stroke-width="0.8"/>')}
+        ${pat('is-grass', 14, 14, '<rect width="14" height="14" fill="#2f3a2a"/><path d="M3 9l1-3M9 4l1-3M11 12l1-3" stroke="#455438" stroke-width="0.8"/>')}
+        ${pat('is-rock', 16, 16, '<rect width="16" height="16" fill="#3d3a35"/><circle cx="5" cy="5" r="2.5" fill="#4a4640"/><circle cx="12" cy="11" r="2" fill="#35322d"/>')}
+        ${pat('is-path', 12, 12, '<rect width="12" height="12" fill="#6b5b45"/><circle cx="4" cy="4" r="2.4" fill="#7d6b52"/><circle cx="10" cy="9" r="2" fill="#5e5040"/>')}
+        ${pat('is-tin', 6, 6, '<rect width="6" height="6" fill="#55606a"/><path d="M0 0v6" stroke="#3e474f" stroke-width="1.2"/>')}
+        ${pat('is-tile', 10, 6, '<rect width="10" height="6" fill="#2e3440"/><path d="M0 6q5-6 10 0" fill="none" stroke="#4a5262" stroke-width="0.8"/>')}
+        ${pat('is-red', 8, 8, '<rect width="8" height="8" fill="#6a3328"/><path d="M0 8h8" stroke="#4e2219" stroke-width="0.8"/>')}
+        ${pat('is-wood', 8, 40, '<rect width="8" height="40" fill="#5a4330"/><path d="M8 0v40" stroke="#3a2a1d" stroke-width="0.8"/>')}
+      </defs>
+      <rect width="360" height="460" fill="url(#is-sea)"/>
+      <path d="M60 130Q40 110 70 92L118 74Q138 10 180 12Q222 10 242 74L298 96Q334 120 326 170L340 260Q350 330 320 400Q300 440 240 446L120 446Q70 440 54 400L42 300Q30 220 60 130Z"
+        fill="url(#is-grass)" stroke="#8aa0a8" stroke-width="1.5" stroke-opacity="0.5"/>
+      <ellipse cx="180" cy="58" rx="58" ry="44" fill="url(#is-rock)"/>
+
+      <rect x="164" y="92" width="32" height="350" rx="10" fill="url(#is-path)"/>
+      <rect x="118" y="170" width="60" height="20" fill="url(#is-path)"/>
+      <rect x="118" y="330" width="60" height="20" fill="url(#is-path)"/>
+      <rect x="182" y="180" width="60" height="20" fill="url(#is-path)"/>
+      <rect x="182" y="335" width="60" height="20" fill="url(#is-path)"/>
+
+      <rect x="60" y="305" width="70" height="80" fill="url(#is-wood)" stroke="#2a1f16" stroke-width="1.5"/>
+      <rect x="6" y="330" width="56" height="20" fill="url(#is-wood)" stroke="#2a1f16" stroke-width="1.5"/>
+      <path d="M10 330v-4M26 330v-4M42 330v-4M10 354v-4M26 354v-4M42 354v-4" stroke="#2a1f16" stroke-width="3"/>
+
+      <rect x="36" y="146" width="100" height="80" fill="#000" opacity="0.4"/>
+      <rect x="30" y="140" width="100" height="80" fill="url(#is-tin)" stroke="#1c2024" stroke-width="2"/>
+      <path d="M30 180H130" stroke="#2a3036" stroke-width="2"/>
+      <rect x="236" y="156" width="100" height="80" fill="#000" opacity="0.4"/>
+      <rect x="230" y="150" width="100" height="80" fill="url(#is-tile)" stroke="#15181e" stroke-width="2"/>
+      <path d="M230 150L255 190H305L330 150M230 230L255 190M330 230L305 190" fill="none" stroke="#5a6272" stroke-width="1.5"/>
+      <rect x="236" y="306" width="100" height="90" fill="#000" opacity="0.4"/>
+      <rect x="230" y="300" width="100" height="90" fill="url(#is-red)" stroke="#2a120d" stroke-width="2"/>
+      <path d="M230 345H330" stroke="#3e1810" stroke-width="2"/>
+
+      <circle cx="180" cy="58" r="24" fill="#e8e2d0" stroke="#2a2420" stroke-width="2"/>
+      <circle cx="180" cy="58" r="17" fill="none" stroke="#9a2a24" stroke-width="5"/>
+      <circle cx="180" cy="58" r="9" fill="#3a3530" stroke="#1a1714" stroke-width="1"/>
+      ${[[70, 110], [300, 130], [320, 250], [60, 260], [100, 420], [300, 420], [205, 260], [150, 410]]
+        .map(([x, y]) => `<circle cx="${x + 2}" cy="${y + 3}" r="9" fill="#000" opacity="0.35"/><circle cx="${x}" cy="${y}" r="9" fill="#1f2a1e" stroke="#2c3a2a" stroke-width="1.5"/>`).join('')}
+      ${lamp(80, 180, 50)}${lamp(280, 190, 50)}${lamp(280, 345, 55)}${lamp(95, 345, 50)}
+
+      ${fpLabel(236, 44, '등대')}${fpLabel(80, 136, '해녀 작업장', 11)}${fpLabel(280, 146, '이장 집', 11)}
+      ${fpLabel(280, 296, '민박', 11)}${fpLabel(95, 300, '선착장', 11)}${fpLabel(180, 455, '마을 어귀', 9)}
+      ${compass(334, 440)}
+      ${vignette}
+    `, '0 0 360 460'),
+  };
+
+  const detective = `<svg viewBox="0 0 24 24">
+    <ellipse cx="12" cy="14" rx="7" ry="6" fill="#3a2e26" stroke="#d5b878" stroke-width="1"/>
+    <circle cx="12" cy="11" r="5.5" fill="#2a211b" stroke="#d5b878" stroke-width="1"/>
+    <circle cx="12" cy="11" r="2.6" fill="#4a3a2e"/>
+    <circle cx="18.5" cy="17" r="2.2" fill="#ffd58a"/>
+  </svg>`;
+
+  return { scenes, portrait, icon, candle, lock, floorplan, detective };
 })();

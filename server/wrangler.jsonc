@@ -7,6 +7,6 @@
   },
   "exports": { "Session": { "type": "durable-object", "storage": "sqlite" } },
   "vars": {
-    "ALLOWED_ORIGINS": "https://chae-dahee.github.io"
+    "ALLOWED_ORIGINS": "https://crime-scene-5j3.pages.dev"
   }
 }

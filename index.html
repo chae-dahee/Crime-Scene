@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-1574117230203395">
 <title>미해결 파일 | 백야장 독살 사건 · 커튼콜 · 마지막 불빛</title>
 <style>
   :root {
@@ -182,28 +183,19 @@
   .choice:hover { border-color: var(--gold); background: rgba(201, 164, 92, 0.15); }
   .choice:active { transform: scale(0.95); }
 
-  /* 수첩 */
-  #notebook {
-    position: fixed; z-index: 20; top: 0; right: 0; bottom: 0; width: min(360px, 90vw); display: flex; flex-direction: column;
-    background: #efe6d2 repeating-linear-gradient(transparent 0 31px, #cfc2a6 31px 32px);
-    color: #2a2018; box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6);
-    transform: translateX(105%); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-  #notebook.open { transform: none; }
-  #notebook::before { content: ""; position: absolute; top: 0; bottom: 0; left: 28px; border-left: 2px solid #d48a8a; }
-  .nb-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1rem 0.8rem 44px; border-bottom: 2px solid #b8a888; }
-  .nb-head h3 { font-family: var(--serif); font-size: 1.2rem; }
-  .nb-head button { font-size: 1.4rem; color: #6a5a44; }
-  #notebook.presenting .nb-head { background: #8a2a2a; color: #f4e6d6; }
-  #notebook.presenting .nb-head button { color: #f4e6d6; }
-  #notebook-list { flex: 1; overflow-y: auto; list-style: none; padding: 0.8rem 0.8rem 0.8rem 40px; }
-  .clue { display: flex; gap: 0.7rem; padding: 0.7rem; margin-bottom: 0.5rem; border-radius: 4px; background: rgba(255, 255, 255, 0.55); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); animation: rise 0.3s both; }
-  .clue b { display: block; font-family: var(--serif); }
-  .clue small { font-size: 0.82rem; line-height: 1.5; color: #4a3e30; }
-  .clue-icon { flex: none; width: 34px; height: 34px; padding: 6px; border-radius: 50%; background: #2a2018; color: var(--gold); }
-  #notebook.presenting .clue { cursor: pointer; transition: transform 0.15s, background 0.15s; }
-  #notebook.presenting .clue:hover { transform: translateX(-4px); background: #fff7e0; box-shadow: 0 0 0 2px #8a2a2a; }
-  .empty { color: #7a6a54; padding: 1rem 0; }
+  /* 단서 목록 */
+  .sidebar { display: flex; flex-direction: column; }
+  .clue-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; margin-bottom: 0.8rem; padding: 0.5rem; border: 1px solid transparent; transition: border-color 0.2s, background 0.2s; }
+  .clue-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; color: var(--muted); font-size: 0.75rem; letter-spacing: 0.18em; }
+  #clue-list { flex: 1; min-height: 0; overflow-y: auto; list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+  .clue { display: flex; align-items: center; gap: 0.55rem; width: 100%; padding: 0.4rem 0.5rem; border: 1px solid transparent; text-align: left; transition: background 0.15s, border-color 0.15s; animation: rise 0.3s both; }
+  .clue b { font-family: var(--serif); font-size: 0.88rem; font-weight: normal; }
+  .clue:hover { background: #221a15; }
+  .clue-icon { flex: none; width: 28px; height: 28px; padding: 5px; border-radius: 50%; background: #2a2018; color: var(--gold); }
+  .clue-panel.presenting { border-color: #8a2a2a; background: rgba(138, 42, 42, 0.14); }
+  .clue-panel.presenting .clue-head { color: #e8b4a4; letter-spacing: 0.05em; }
+  .clue-panel.presenting .clue:hover { border-color: #b04a3a; background: rgba(138, 42, 42, 0.3); }
+  .empty { color: var(--muted); font-size: 0.82rem; padding: 0.3rem; }
 
   /* 단서 알림 */
   #toasts { position: fixed; z-index: 60; top: 4.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
@@ -294,8 +286,6 @@
   #dialog { border: 1px solid #8e754c; border-radius: 2px; background: linear-gradient(115deg, rgba(48, 37, 27, 0.98), rgba(25, 21, 17, 0.98)); box-shadow: inset 0 0 24px rgba(220, 181, 111, 0.06), 0 8px 22px rgba(0, 0, 0, 0.32); }
   #dialog-speaker { border-radius: 1px; background: #d4b779; }
   .choice { border-radius: 2px; border-color: #806b4a; background: rgba(12, 11, 9, 0.36); }
-  #notebook { background-color: #eee2c5; background-image: repeating-linear-gradient(transparent 0 31px, rgba(143, 117, 77, 0.22) 31px 32px), linear-gradient(100deg, #f1e7d0, #e5d7b8); }
-  .clue { border-radius: 2px; background: rgba(255, 251, 235, 0.68); }
   .modal-box { border-radius: 2px; }
   .modal-dark { background: linear-gradient(135deg, #30251c, #171411); border-color: #8e754c; }
   .case-file { background: linear-gradient(135deg, #e9ddc0, #d2c19a); }
@@ -325,6 +315,99 @@
   }
   .toast { border-radius: 2px; background: linear-gradient(110deg, #3b2b1f, #171411); }
   #ending { background: radial-gradient(ellipse at center, #473628, #12120f 74%); }
+
+  /* 미니맵 */
+  .has-map .sidebar h3, .has-map .sidebar h3 + div { display: none; }
+  #leave-room { width: 100%; margin-bottom: 1rem; }
+  #leave-room[hidden] { display: none; }
+  .map-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #0e0b09; container-type: size; }
+  .minimap { position: relative; width: min(100cqw, 100cqh * 360 / 460); overflow: hidden; }
+  .minimap > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .mm-room {
+    position: absolute; z-index: 1; opacity: 0; transition: opacity 0.25s;
+    background: radial-gradient(ellipse at center, rgba(255, 206, 120, 0.4), rgba(255, 206, 120, 0.06) 75%);
+  }
+  .mm-room.visited { opacity: 0.18; }
+  .mm-room:hover { opacity: 0.6; }
+  .mm-detective { position: absolute; z-index: 3; width: 7%; aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; filter: drop-shadow(0 0 6px rgba(255, 200, 110, 0.7)); }
+  .mm-detective svg { width: 100%; height: 100%; display: block; }
+  .walking .mm-detective svg { animation: mm-bob 0.28s ease-in-out infinite alternate; }
+  @keyframes mm-bob { to { transform: translateY(-8%) rotate(4deg); } }
+  .mm-step { position: absolute; z-index: 2; width: 1.4%; aspect-ratio: 1; border-radius: 50%; background: #d5b878; transform: translate(-50%, -50%); opacity: 0; pointer-events: none; animation: mm-step 1.8s both; }
+  @keyframes mm-step { 8% { opacity: 0.75; } to { opacity: 0; } }
+  .mm-suspect { position: absolute; z-index: 2; width: 9%; aspect-ratio: 1; overflow: hidden; border: 1px solid #d5b878; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); pointer-events: none; animation: mm-fade 0.5s both; }
+  @keyframes mm-fade { from { opacity: 0; } }
+  .mm-suspect svg { width: 100%; height: 100%; display: block; }
+  .mm-suspect img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 52% 30%; transform: scale(1.8); transform-origin: 52% 30%; }
+  .mm-stick {
+    display: none; position: relative; flex: none; width: 112px; aspect-ratio: 1;
+    border: 1px solid rgba(213, 184, 120, 0.6); border-radius: 50%; background: rgba(20, 16, 13, 0.55); touch-action: none;
+  }
+  .main { position: relative; }
+  .pad { display: none; align-items: center; gap: 1rem; }
+  #scene.map-mode ~ .pad { display: flex; position: absolute; right: 2rem; bottom: 2rem; z-index: 5; }
+  .act-btn {
+    padding: 0.6rem 1.1rem; border: 1px solid #d5b878; background: rgba(31, 23, 18, 0.94); color: var(--ink);
+    font-family: var(--serif); box-shadow: 0 0 16px rgba(213, 184, 120, 0.35);
+  }
+  .act-btn:disabled, .act-btn[hidden] { display: none; }
+  .mm-stick span { position: absolute; inset: 30%; border-radius: 50%; background: radial-gradient(#e4cf9d, #9f7a44); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); pointer-events: none; }
+  #scene.map-mode { flex: 1; width: 100%; min-height: 0; aspect-ratio: auto; }
+  #scene.map-mode + #dialog:not(.shown) { display: none; }
+  .mm-hint {
+    position: absolute; z-index: 4; left: 50%; bottom: 0.8rem; transform: translateX(-50%); padding: 0.3rem 0.9rem; white-space: nowrap;
+    background: rgba(31, 23, 18, 0.88); border: 1px solid #8e754c; color: var(--ink); font-size: 0.8rem; pointer-events: none;
+    animation: mm-hint 5s ease both;
+  }
+  @keyframes mm-hint { 0% { opacity: 0; } 8%, 75% { opacity: 1; } 100% { opacity: 0; } }
+  .hint-touch { display: none; }
+  [data-key]::after { content: " (" attr(data-key) ")"; color: var(--muted); font-size: 0.85em; }
+  @media (pointer: coarse) {
+    .mm-stick { display: block; }
+    #scene.map-mode ~ .pad { position: static; align-self: stretch; justify-content: space-between; }
+    .act-btn { width: 96px; height: 96px; padding: 0.6rem; border-radius: 50%; font-size: 0.85rem; line-height: 1.3; }
+    .act-btn:disabled:not([hidden]) { display: block; opacity: 0.35; }
+    [data-key]::after { content: none; }
+    .hint-key { display: none; }
+    .hint-touch { display: inline; }
+  }
+
+  /* 방 안 대화 */
+  .room-suspect {
+    position: absolute; z-index: 4; bottom: 0; width: 17%; aspect-ratio: 200 / 240; transform: translateX(-50%);
+    filter: brightness(0.85) drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
+    transition: left 0.45s ease, width 0.45s ease, filter 0.3s, opacity 0.3s;
+    animation: breathe 3.2s ease-in-out infinite alternate;
+  }
+  .room-suspect img, .room-suspect svg {
+    width: 100%; height: 100%; display: block; object-fit: cover; border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+    -webkit-mask-image: linear-gradient(#000 80%, transparent); mask-image: linear-gradient(#000 80%, transparent);
+  }
+  .room-suspect:hover { filter: brightness(1) drop-shadow(0 0 12px rgba(213, 184, 120, 0.55)); }
+  .room-suspect .tag {
+    position: absolute; left: 50%; bottom: 6%; transform: translateX(-50%); padding: 0.15rem 0.6rem; white-space: nowrap;
+    background: rgba(31, 23, 18, 0.9); border: 1px solid #8e754c; font-family: var(--serif); font-size: 0.8rem;
+  }
+  @keyframes breathe { to { transform: translateX(-50%) translateY(-1.2%); } }
+  #scene .scene-art { transition: filter 0.4s; }
+  #scene.talking .scene-art { filter: brightness(0.45); }
+  #scene.talking .hotspot { pointer-events: none; }
+  #scene.talking .room-suspect:not(.active) { opacity: 0.3; pointer-events: none; }
+  #scene.talking .room-suspect.active { left: 70% !important; width: 32%; filter: brightness(1); animation: none; }
+  #scene.talking .room-suspect.active .tag { display: none; }
+  #scene.talking .room-suspect.active.shaken { animation: shake 0.4s; }
+  @media (max-width: 860px) {
+    #leave-room { width: auto; margin: 0; }
+    .sidebar { flex-direction: row; align-items: center; }
+    .main { justify-content: flex-start; }
+    .clue-panel { align-self: stretch; margin: 0; padding: 0.3rem; }
+    .main:has(#scene.map-mode) > .clue-panel { display: none; }
+    .clue-panel:not(.presenting) .clue-head { display: none; }
+    #clue-list { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+    .clue { width: auto; flex: none; white-space: nowrap; }
+    .accuse-wrap { margin-left: auto; padding: 0; border: none; }
+    .accuse-wrap .btn { width: auto; }
+  }
 </style>
 </head>
 <body>
@@ -352,7 +435,6 @@
     <header class="topbar">
       <h2 id="play-title"></h2>
       <div id="lives" title="남은 추리 기회"></div>
-      <button class="btn btn-ghost btn-sm" id="notebook-btn">수첩<span class="badge" id="clue-count">0</span></button>
       <button class="btn btn-ghost btn-sm" id="to-lobby">로비</button>
     </header>
     <div class="stage">
@@ -361,6 +443,11 @@
         <div id="nav-locations"></div>
         <h3>인물</h3>
         <div id="nav-suspects"></div>
+        <button class="btn btn-ghost btn-sm" id="leave-room" data-key="Esc" hidden>밖으로 나간다</button>
+        <section class="clue-panel" id="clue-panel">
+          <div class="clue-head"><span id="clue-head">단서</span><span class="badge" id="clue-count">0</span></div>
+          <ul id="clue-list"></ul>
+        </section>
       <div class="accuse-wrap"><button class="btn" id="accuse-btn">범인은?</button></div>
       </nav>
       <div class="main">
@@ -369,6 +456,10 @@
           <div id="dialog-speaker" hidden></div>
           <div id="dialog-text"></div>
           <div id="dialog-choices"></div>
+        </div>
+        <div class="pad">
+          <div class="mm-stick" id="stick"><span></span></div>
+          <button class="act-btn" id="act-btn" data-key="Space" disabled>살펴보기</button>
         </div>
       </div>
     </div>
@@ -380,17 +471,13 @@
     <button class="btn btn-primary" id="ending-lobby">로비로</button>
   </section>
 
-  <aside id="notebook">
-    <div class="nb-head"><h3 id="notebook-title">수첩</h3><button id="notebook-close" aria-label="닫기">×</button></div>
-    <ul id="notebook-list"></ul>
-  </aside>
 
   <div class="modal" id="help-modal">
     <div class="modal-box modal-dark">
       <h2>게임 방법</h2>
       <ol>
         <li>장소 그림에서 수상한 곳을 직접 눌러 조사하고 단서를 모은다.</li>
-        <li>인물을 심문하고 수첩의 단서를 제시해 새 진술을 얻는다.</li>
+        <li>인물과 대화하는 중에 단서 목록의 단서를 눌러 제시하고 새 진술을 얻는다.</li>
         <li>범인, 수법, 동기를 추리해 사건 보고서를 제출한다.</li>
         <li>추리 기회는 촛불 3개다. 모두 꺼지면 사건은 미해결로 끝난다.</li>
       </ol>
@@ -426,6 +513,7 @@
   </div>
 
   <script src="js/art.js"></script>
+  <script src="js/map.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>
