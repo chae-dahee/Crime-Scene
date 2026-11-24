@@ -286,12 +286,12 @@ const ART = (() => {
     greenhouse: 'greenhouse',
     hallway: 'hallway-clues',
     mansion: 'mansion',
-    theater: 'assets/scenario4/backgrounds/dressing-room.png',
-    stage: 'assets/scenario4/backgrounds/stage.png',
-    backstage: 'assets/scenario4/backgrounds/backstage.png',
-    booth: 'assets/scenario4/backgrounds/control-room.png',
-    lobbyHall: 'assets/scenario4/backgrounds/lobby.png',
-    theaterRoom: 'assets/scenario4/backgrounds/interrogation.png',
+    theater: 'assets/scenario2/backgrounds/dressing-room.png',
+    stage: 'assets/scenario2/backgrounds/stage.png',
+    backstage: 'assets/scenario2/backgrounds/backstage.png',
+    booth: 'assets/scenario2/backgrounds/control-room.png',
+    lobbyHall: 'assets/scenario2/backgrounds/lobby.png',
+    theaterRoom: 'assets/scenario2/backgrounds/interrogation.png',
   };
   Object.entries(paintedScenes).forEach(([scene, file]) => {
     const src = file.startsWith('assets/') ? file : `assets/scenario1/backgrounds/${file}.png`;
