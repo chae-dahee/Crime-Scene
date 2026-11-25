@@ -68,6 +68,8 @@ export interface Scenario {
     answer: Record<string, string>;
   };
   endings: { success: string[]; fail: string[] };
+  // 아직 얻지 않은 단서 중 needs 단서를 가진 힌트에서 무작위로 준다.
+  adHints: { clue: string; text: string; needs?: string }[];
 }
 
 export interface SessionState {
@@ -77,4 +79,6 @@ export interface SessionState {
   fallbacks: Record<string, number>;
   lives: number;
   finished: boolean;
+  hintTicket?: number; // 광고 시작 시각(ms)
+  adHints?: number; // 받은 광고 힌트 수. 기능 배포 전에 시작한 세션에는 없다.
 }

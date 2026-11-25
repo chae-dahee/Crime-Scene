@@ -3,6 +3,8 @@ import type { Scenario, SessionState } from './types';
 
 export const MAX_LIVES = 3;
 const HINT_AFTER = 2;
+// Ad Manager 웹 보상형 광고가 보상 지급 전에 요구하는 최소 노출 시간이다.
+const AD_MIN_MS = 7000;
 
 export class GameError extends Error {
   status: number;
@@ -79,6 +81,33 @@ export function present(state: SessionState, suspectId: string, clueId: string) 
   const text = r.known && state.clues.includes(r.known.clue) ? r.known.text
     : again ? (r.again || sus.pressed || r.text) : r.text;
   return { text, reacted: true, clue: gain(state, again ? r.againGives : r.gives) };
+}
+
+// 제시형 힌트는 제시할 단서가 있어야 따를 수 있으므로 needs 단서를 가진 경우만 후보로 둔다.
+function adHintPool(state: SessionState) {
+  return scenarioOf(state).adHints.filter((h) =>
+    !state.clues.includes(h.clue) && (!h.needs || state.clues.includes(h.needs)));
+}
+
+// 남은 힌트가 없으면 보상 없이 광고를 보지 않도록 티켓을 발급하지 않는다.
+export function hintTicket(state: SessionState, now: number) {
+  assertPlaying(state);
+  if (!adHintPool(state).length) throw new GameError(409);
+  state.hintTicket = now;
+  return {};
+}
+
+// 광고 시청 자체는 검증할 수 없어 티켓 발급 후 최소 노출 시간만 강제한다.
+export function hint(state: SessionState, now: number) {
+  assertPlaying(state);
+  if (state.hintTicket === undefined) throw new GameError(403);
+  if (now - state.hintTicket < AD_MIN_MS) throw new GameError(429);
+  const pool = adHintPool(state);
+  if (!pool.length) throw new GameError(409);
+  const next = pool[Math.floor(Math.random() * pool.length)];
+  state.hintTicket = undefined;
+  state.adHints = (state.adHints ?? 0) + 1;
+  return { text: next.text };
 }
 
 export function accuse(state: SessionState, picks: Record<string, string>) {

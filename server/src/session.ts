@@ -1,5 +1,5 @@
 import { DurableObject } from 'cloudflare:workers';
-import { GameError, accuse, inspect, newState, present, publicView } from './game';
+import { GameError, accuse, hint, hintTicket, inspect, newState, present, publicView } from './game';
 import type { SessionState } from './types';
 
 export interface Result {
@@ -7,7 +7,7 @@ export interface Result {
   body?: string;
 }
 
-export type Action = 'inspect' | 'present' | 'accuse';
+export type Action = 'inspect' | 'present' | 'accuse' | 'hint-ticket' | 'hint';
 
 export class Session extends DurableObject {
   async start(scenarioId: string): Promise<Result> {
@@ -24,6 +24,8 @@ export class Session extends DurableObject {
       if (!state) throw new GameError(404);
       const body = action === 'inspect' ? inspect(state, input.location, input.spot)
         : action === 'present' ? present(state, input.suspect, input.clue)
+        : action === 'hint-ticket' ? hintTicket(state, Date.now())
+        : action === 'hint' ? hint(state, Date.now())
         : accuse(state, input.picks);
       await this.ctx.storage.put('state', state);
       return body;
