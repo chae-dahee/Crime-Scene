@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-adsense-account" content="ca-pub-1574117230203395">
+<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
 <title>미해결 파일 | 백야장 독살 사건 · 커튼콜 · 마지막 불빛</title>
 <style>
   :root {
@@ -172,6 +173,9 @@
   #dialog-text { font-family: var(--serif); font-size: 1.05rem; line-height: 1.75; min-height: 3.5em; }
   #dialog.typing::after { content: "▼"; position: absolute; right: 1rem; bottom: 0.6rem; color: var(--gold); font-size: 0.7rem; animation: blink 0.8s infinite; }
   @keyframes blink { 50% { opacity: 0; } }
+  #dialog.hint { border-color: #5fa89a; }
+  #dialog.hint #dialog-speaker { background: #5fa89a; }
+  #dialog.hint #dialog-text { color: #bfe6dc; }
 
   /* 요청 대기 중 클릭을 막아 중복 요청을 방지한다. */
   body.loading::before { content: ""; position: fixed; inset: 0; z-index: 999; cursor: progress; }
@@ -320,6 +324,8 @@
   .has-map .sidebar h3, .has-map .sidebar h3 + div { display: none; }
   #leave-room { width: 100%; margin-bottom: 1rem; }
   #leave-room[hidden] { display: none; }
+  #hint-btn { width: 100%; margin-bottom: 0.6rem; }
+  #hint-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .map-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #0e0b09; container-type: size; }
   .minimap { position: relative; width: min(100cqw, 100cqh * 360 / 460); overflow: hidden; }
   .minimap > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
@@ -397,7 +403,7 @@
   #scene.talking .room-suspect.active .tag { display: none; }
   #scene.talking .room-suspect.active.shaken { animation: shake 0.4s; }
   @media (max-width: 860px) {
-    #leave-room { width: auto; margin: 0; }
+    #leave-room, #hint-btn { width: auto; margin: 0; }
     .sidebar { flex-direction: row; align-items: center; }
     .main { justify-content: flex-start; }
     .clue-panel { align-self: stretch; margin: 0; padding: 0.3rem; }
@@ -448,6 +454,7 @@
           <div class="clue-head"><span id="clue-head">단서</span><span class="badge" id="clue-count">0</span></div>
           <ul id="clue-list"></ul>
         </section>
+        <button class="btn btn-ghost btn-sm" id="hint-btn">광고 보고 힌트 받기</button>
       <div class="accuse-wrap"><button class="btn" id="accuse-btn">범인은?</button></div>
       </nav>
       <div class="main">
@@ -514,6 +521,7 @@
 
   <script src="js/art.js"></script>
   <script src="js/map.js"></script>
+  <script src="js/ads.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

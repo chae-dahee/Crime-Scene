@@ -210,4 +210,15 @@ export const lighthouse: Scenario = {
       '얼마 뒤 해무도 앞바다에 정체 모를 배가 다시 나타났다.',
     ],
   },
+
+  adHints: [
+    { clue: 'torn_log', text: '등대 책상 위의 일지를 살펴봐야겠다.' },
+    { clue: 'torn_page', needs: 'torn_log', text: '찢긴 등대 일지를 강하늘에게 보여 줘야겠다.' },
+    { clue: 'lamp_valve', text: '등대의 램프실을 살펴봐야겠다.' },
+    { clue: 'camera', text: '민박의 카메라를 살펴봐야겠다.' },
+    { clue: 'shadow_photo', needs: 'camera', text: '서준의 카메라를 서준에게 보여 줘야겠다.' },
+    { clue: 'oil_spill', text: '등대 바닥을 살펴봐야겠다.' },
+    { clue: 'oily_boots', text: '이장 집 현관의 장화를 살펴봐야겠다.' },
+    { clue: 'resort_plan', text: '이장 집 거실의 액자를 살펴봐야겠다.' },
+  ],
 };

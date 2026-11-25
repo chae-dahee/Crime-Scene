@@ -227,4 +227,19 @@ export const theater: Scenario = {
       '다음 날 달빛극장의 매각 계약은 서명할 사람 없이 미뤄졌다.',
     ],
   },
+
+  adHints: [
+    { clue: 'cue_log', text: '조정실의 조명 콘솔을 살펴봐야겠다.' },
+    { clue: 'cue_sheet', text: '조정실의 큐시트를 살펴봐야겠다.' },
+    { clue: 'script_memo', text: '분장실 바닥의 대본을 살펴봐야겠다.' },
+    { clue: 'yujin_slap', needs: 'script_memo', text: '대본 여백 메모를 차유진에게 보여 줘야겠다.' },
+    { clue: 'sera_counter', needs: 'yujin_slap', text: '유진의 증언을 윤세라에게 보여 줘야겠다.' },
+    { clue: 'yujin_truth', needs: 'sera_counter', text: '세라의 반격을 차유진에게 두 번 보여 줘야겠다.' },
+    { clue: 'seunghee_slip', needs: 'yujin_truth', text: '유진의 고백을 백승희에게 두 번 보여 줘야겠다.' },
+    { clue: 'contract', text: '로비의 안내 데스크를 살펴봐야겠다.' },
+    { clue: 'phone', text: '분장실 화장대 위의 휴대폰을 살펴봐야겠다.' },
+    { clue: 'call_record', needs: 'phone', text: '대표의 휴대폰을 차유진에게 보여 줘야겠다.' },
+    { clue: 'work_footprints', text: '무대 뒤 바닥의 발자국을 살펴봐야겠다.' },
+    { clue: 'seunghee_shoes', needs: 'work_footprints', text: '분장실 쪽 발자국을 백승희에게 두 번 보여 줘야겠다.' },
+  ],
 };

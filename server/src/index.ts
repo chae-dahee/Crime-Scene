@@ -7,7 +7,7 @@ interface Env {
   ALLOWED_ORIGINS: string;
 }
 
-const ACTIONS: Action[] = ['inspect', 'present', 'accuse'];
+const ACTIONS: Action[] = ['inspect', 'present', 'accuse', 'hint-ticket', 'hint'];
 
 function corsHeaders(req: Request, env: Env): Record<string, string> {
   const origin = req.headers.get('Origin') ?? '';

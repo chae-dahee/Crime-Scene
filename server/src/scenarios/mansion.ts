@@ -218,4 +218,15 @@ export const mansion: Scenario = {
       '백야장의 서재에는 아무도 다시 들어가지 않았다.',
     ],
   },
+
+  adHints: [
+    { clue: 'pillbox', text: '서재 책상 위의 약통을 살펴봐야겠다.' },
+    { clue: 'empty_capsules', text: '의무실의 약품 선반을 살펴봐야겠다.' },
+    { clue: 'maid_testimony', needs: 'empty_capsules', text: '빈 캡슐을 박미령에게 보여 줘야겠다.' },
+    { clue: 'med_record', text: '의무실의 투약 기록 장부를 살펴봐야겠다.' },
+    { clue: 'annex', needs: 'med_record', text: '수정된 투약 기록을 최은우에게 보여 줘야겠다.' },
+    { clue: 'poison_plant', text: '온실의 흰종꽃 화분을 살펴봐야겠다.' },
+    { clue: 'jaeho_note', needs: 'poison_plant', text: '꺾인 흰종꽃을 박미령에게 보여 줘야겠다.' },
+    { clue: 'poison_capsule', needs: 'jaeho_note', text: '윤재호의 수첩을 윤재호에게 두 번 보여 줘야겠다.' },
+  ],
 };

@@ -76,6 +76,7 @@ function enterPlay() {
   renderNav();
   renderLives();
   renderClues();
+  $('hint-btn').disabled = false;
   show('play');
   if (map) {
     Minimap.init(state.scenarioId, sc.locations, (id) => openLocation(sc.locations.find((l) => l.id === id)));
@@ -218,6 +219,7 @@ function say(speaker, text, onDone, choices = []) {
     if (typing.onDone) typing.onDone();
     typing = null;
   }
+  $('dialog').classList.remove('hint');
   $('dialog-speaker').textContent = speaker;
   $('dialog-speaker').hidden = !speaker;
   $('dialog-choices').innerHTML = '';
@@ -278,6 +280,32 @@ function pickClue(clue) {
 function setTarget(sus) {
   $('clue-panel').classList.toggle('presenting', Boolean(sus));
   $('clue-head').textContent = sus ? `${sus.name}에게 제시할 단서` : '단서';
+}
+
+// 힌트 광고: 서버가 티켓을 발급한 뒤 광고를 보여 주고, 시청 시간을 확인한 서버가 힌트를 준다.
+function narrate(text) {
+  $('dialog').classList.add('shown');
+  say('✦ 힌트', text, null, state.view.sus ? suspectChoices(state.view.sus) : []);
+  $('dialog').classList.add('hint');
+}
+
+async function requestHint() {
+  try {
+    await act('hint-ticket', {});
+    const watched = await showRewardedAd();
+    if (watched === null) return narrate('광고 힌트는 모바일 브라우저에서만 받을 수 있다.');
+    if (!watched) return narrate('광고를 끝까지 보지 않아 힌트를 받지 못했다.');
+    narrate((await act('hint', {})).text);
+  } catch (e) {
+    if (e.message === '409') {
+      $('hint-btn').disabled = true;
+      narrate('더 줄 힌트가 없다. 모은 단서로 범인을 밝혀 보자.');
+    } else if (e.message === '429') {
+      narrate('광고를 끝까지 봐야 힌트를 받을 수 있다.');
+    } else {
+      throw e;
+    }
+  }
 }
 
 // 고발
@@ -353,6 +381,7 @@ $('help-close').addEventListener('click', () => $('help-modal').classList.remove
 $('intro-next').addEventListener('click', enterPlay);
 $('dialog').addEventListener('click', () => { if (typing) typing.finish(); });
 $('accuse-btn').addEventListener('click', openAccuse);
+$('hint-btn').addEventListener('click', requestHint);
 $('leave-room').addEventListener('click', openMap);
 const narrow = matchMedia('(max-width: 860px)');
 const placeClues = () => (narrow.matches ? $('scene').before($('clue-panel')) : $('accuse-btn').parentElement.before($('clue-panel')));
