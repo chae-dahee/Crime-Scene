@@ -74,6 +74,29 @@ const MAPS = {
     suspects: { hanul: 'tower', deokbae: 'chief', jeonghui: 'workshop', seojun: 'minbak' },
     stand: { hanul: 92, deokbae: 14, jeonghui: 88, seojun: 88 },
   },
+  train: {
+    size: [360, 460],
+    start: [112, 428],
+    // 객실 옆 통로가 열차 끝까지 이어지고, 화물칸은 통로 끝에서 바로 들어간다.
+    walkable: [[105, 100, 14, 332], [117, 149, 18, 14], [117, 270, 18, 14], [117, 388, 18, 14]],
+    nodes: {
+      entry: [112, 428], sDining: [112, 395], corridor: [112, 320], sCabin: [112, 277], sCrew: [112, 156],
+      dining: [133, 395], cabin: [133, 277], crew: [133, 156], freight: [112, 102],
+    },
+    edges: [
+      ['entry', 'sDining'], ['sDining', 'dining'], ['sDining', 'corridor'], ['corridor', 'sCabin'], ['sCabin', 'cabin'],
+      ['sCabin', 'sCrew'], ['sCrew', 'crew'], ['sCrew', 'freight'],
+    ],
+    rooms: {
+      freight: { area: [90, 20, 190, 86], exit: [112, 124] },
+      crew: { area: [130, 116, 150, 80], exit: [112, 156] },
+      corridor: { area: [94, 206, 36, 134], exit: [112, 277], passage: true },
+      cabin: { area: [130, 255, 150, 43], exit: [112, 277] },
+      dining: { area: [130, 350, 150, 90], exit: [112, 395] },
+    },
+    suspects: { harin: 'dining', doyun: 'dining', junghoon: 'crew', yujeong: 'corridor' },
+    stand: { harin: 92, doyun: 72, junghoon: 12, yujeong: 88 },
+  },
 };
 
 const Minimap = (() => {

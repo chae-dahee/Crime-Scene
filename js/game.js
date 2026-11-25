@@ -2,6 +2,7 @@ const LOBBY = [
   { id: 'mansion', title: '백야장 독살 사건', tag: '저택 · 용의자 4명', art: 'mansion', desc: '폭우로 고립된 저택. 새 유언장 공개 전날 밤, 주인이 서재에서 숨진 채 발견된다.' },
   { id: 'theater', title: '커튼콜', tag: '소극장 · 용의자 4명', art: 'theater', desc: '폐관 공연의 마지막 밤, 분장실에서 극단 대표가 숨진 채 발견된다.' },
   { id: 'lighthouse', title: '마지막 불빛', tag: '섬 · 용의자 4명', art: 'lighthouse', desc: '폭풍 치는 밤 등대 불이 꺼졌다. 다음 날 아침, 등대지기가 계단 아래에서 발견된다.' },
+  { id: 'train', title: '종착역', tag: '야간열차 · 용의자 4명', art: 'train', desc: '폭설로 멈춘 침대열차. 잠긴 객실에서 출판사 대표가 숨진 채 발견된다.', locked: true, ad: true },
 ];
 const API_BASE = location.hostname === 'localhost'
   ? 'http://localhost:8787'
@@ -36,20 +37,44 @@ function show(screenId) {
 }
 
 // 로비
+// 사파리 사생활 보호 모드 등에서는 localStorage 접근이 예외를 던진다.
+const unlockKey = (id) => `unlocked:${id}`;
+function isUnlocked(id) {
+  try { return localStorage.getItem(unlockKey(id)) === '1'; } catch { return false; }
+}
+function saveUnlock(id) {
+  try { localStorage.setItem(unlockKey(id), '1'); } catch {}
+}
+
 function renderLobby() {
   const cards = $('cards');
   LOBBY.forEach((s) => {
     const card = document.createElement('article');
-    card.className = `card${s.locked ? ' locked' : ''}`;
+    const select = () => {
+      document.querySelectorAll('.card').forEach((c) => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedId = s.id;
+      $('start').disabled = false;
+    };
+    const locked = s.locked && !(s.ad && isUnlocked(s.id));
+    card.className = `card${locked ? ' locked' : ''}${locked && s.ad ? ' ad' : ''}`;
     card.innerHTML = `
-      <div class="card-art">${ART.scenes[s.art]}${s.locked ? `<div class="lock">${ART.lock}<span>잠김</span></div>` : ''}</div>
+      <div class="card-art">${ART.scenes[s.art]}${locked ? `<div class="lock">${ART.lock}<span>${s.ad ? '광고 보고 열기' : '잠김'}</span></div>` : ''}</div>
       <div class="card-body"><div class="tag">${s.tag}</div><h2>${s.title}</h2><p>${s.desc}</p></div>`;
-    if (!s.locked) {
-      card.addEventListener('click', () => {
-        document.querySelectorAll('.card').forEach((c) => c.classList.remove('selected'));
-        card.classList.add('selected');
-        selectedId = s.id;
-        $('start').disabled = false;
+    if (!locked) {
+      card.addEventListener('click', select);
+    } else if (s.ad) {
+      card.addEventListener('click', async () => {
+        if (!card.classList.contains('locked')) return select();
+        let watched = await showRewardedAd();
+        // PC 브라우저는 보상형 광고를 지원하지 않아 개발용 localhost에서만 바로 연다.
+        if (watched === null && location.hostname === 'localhost') watched = true;
+        if (watched === null) return alert('이 시나리오는 모바일 브라우저에서 광고를 보고 열 수 있습니다.');
+        if (!watched) return alert('광고를 끝까지 봐야 시나리오가 열립니다.');
+        saveUnlock(s.id);
+        card.classList.remove('locked', 'ad');
+        card.querySelector('.lock').remove();
+        select();
       });
     }
     cards.appendChild(card);

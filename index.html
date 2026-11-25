@@ -88,9 +88,19 @@
   .card p { font-size: 0.85rem; line-height: 1.55; color: #b8b2a5; }
   .card.locked { cursor: not-allowed; filter: grayscale(0.9) brightness(0.55); }
   .card.locked:hover { transform: none; box-shadow: none; }
+  .card.locked.ad { cursor: pointer; }
   .lock { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; background: rgba(0, 0, 0, 0.55); color: #ddd; font-weight: 700; letter-spacing: 0.2em; }
   .lock svg { width: 34px; height: 34px; }
   .lobby-buttons { display: flex; gap: 1rem; }
+  /* 소개 글이 화면보다 길면 로비를 스크롤한다. auto 여백은 넘칠 때 0이 되어 위쪽이 잘리지 않는다. */
+  #lobby { overflow-y: auto; }
+  #lobby > .logo { margin-top: auto; }
+  .lobby-info { max-width: 720px; margin-top: auto; padding-top: 3rem; color: #b8b2a5; font-size: 0.9rem; line-height: 1.7; user-select: text; }
+  .lobby-info h2 { margin: 1.6rem 0 0.5rem; font-family: var(--serif); font-size: 1.05rem; color: var(--gold); }
+  .lobby-info ol { padding-left: 1.2rem; }
+  .lobby-info dt { margin-top: 0.6rem; color: var(--ink); font-weight: 700; }
+  .lobby-info footer { margin-top: 2rem; text-align: center; font-size: 0.8rem; }
+  .lobby-info a { color: var(--gold); }
 
   /* 도입 */
   #intro { flex-direction: column; align-items: center; justify-content: center; padding: 2rem; background: #050404; text-align: center; }
@@ -429,6 +439,34 @@
       <button class="btn btn-primary" id="start" disabled>사건 시작</button>
       <button class="btn btn-ghost" id="help">게임 방법</button>
     </div>
+    <section class="lobby-info">
+      <h2>미해결 파일 소개</h2>
+      <p>미해결 파일은 웹 브라우저에서 바로 즐기는 탐색·심문형 추리 게임입니다. 사건 현장을 직접 조사해 단서를 모으고, 용의자에게 단서를 들이밀어 진술의 빈틈을 찾습니다. 모든 사건은 범인, 수법, 동기를 단서만으로 논리적으로 특정할 수 있도록 설계했습니다.</p>
+
+      <h2>플레이 방법</h2>
+      <ol>
+        <li>사건을 고르고 도입부를 읽은 뒤 조사를 시작합니다.</li>
+        <li>장소 그림에서 수상한 곳을 눌러 살펴보면 단서가 단서 목록에 쌓입니다.</li>
+        <li>용의자와 대화하는 중에 단서를 누르면 그 단서를 제시합니다. 반응에 따라 새로운 증언이나 단서를 얻습니다.</li>
+        <li>말을 피하는 용의자에게는 같은 단서를 다시 제시해 볼 수 있습니다.</li>
+        <li>범인, 수법, 동기를 골라 최종 수사 보고서를 제출합니다. 추리 기회는 촛불 3개이며, 모두 꺼지면 사건은 미해결로 남습니다.</li>
+      </ol>
+
+      <h2>사건 목록</h2>
+      <dl>
+        <dt>백야장 독살 사건</dt>
+        <dd>폭우로 다리가 무너져 고립된 산속 저택에서, 새 유언장 공개를 하루 앞둔 주인이 서재에서 숨진 채 발견됩니다. 장녀, 주치의, 집사, 비서 네 사람 모두 그를 해칠 이유가 있었습니다.</dd>
+        <dt>커튼콜</dt>
+        <dd>매각을 앞둔 소극장의 폐관 공연 마지막 밤, 커튼콜에 나오지 않은 극단 대표가 분장실에서 발견됩니다. 서로를 의심하는 배우와 스태프의 증언을 맞부딪쳐 거짓을 가려내야 합니다.</dd>
+        <dt>마지막 불빛</dt>
+        <dd>폭풍으로 배편이 끊긴 남해의 섬, 40년 동안 꺼진 적 없던 등대 불이 꺼진 다음 날 아침 등대지기가 계단 아래에서 발견됩니다. 일지에는 "그 배가 오지 않도록"이라는 마지막 문장이 남아 있습니다.</dd>
+      </dl>
+
+      <h2>힌트</h2>
+      <p>막혔을 때 같은 용의자에게 반응 없는 단서를 거듭 제시하면, 용의자가 조사해 볼 만한 곳을 넌지시 알려 줍니다. 모바일 브라우저에서는 광고를 시청하고 다음에 할 일을 바로 안내받을 수도 있습니다. 광고를 보지 않아도 모든 사건을 끝까지 풀 수 있습니다.</p>
+
+      <footer><a href="privacy.html">개인정보처리방침</a></footer>
+    </section>
   </section>
 
   <section class="screen" id="intro">
