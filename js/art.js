@@ -292,6 +292,17 @@ const ART = (() => {
     booth: 'assets/scenario2/backgrounds/control-room.png',
     lobbyHall: 'assets/scenario2/backgrounds/lobby.png',
     theaterRoom: 'assets/scenario2/backgrounds/interrogation.png',
+    train: 'assets/scenario4/backgrounds/victim-cabin.png',
+    sleeperCorridor: 'assets/scenario4/backgrounds/sleeper-corridor.png',
+    diningCar: 'assets/scenario4/backgrounds/dining-car.png',
+    crewRoom: 'assets/scenario4/backgrounds/crew-room.png',
+    freightCar: 'assets/scenario4/backgrounds/freight-car.png',
+    trainRoom: 'assets/scenario4/backgrounds/interrogation.png',
+    pageantVictimRoom: 'assets/scenario5/backgrounds/victim-room.png',
+    pageantFittingRoom: 'assets/scenario5/backgrounds/fitting-room.png',
+    pageantStage: 'assets/scenario5/backgrounds/ballroom-stage.png',
+    pageantOffice: 'assets/scenario5/backgrounds/pageant-office.png',
+    formerWinnerRoom: 'assets/scenario5/backgrounds/former-winner-room.png',
   };
   Object.entries(paintedScenes).forEach(([scene, file]) => {
     const src = file.startsWith('assets/') ? file : `assets/scenario1/backgrounds/${file}.png`;
@@ -360,6 +371,8 @@ const ART = (() => {
     trophy: '<path d="M7 4h10v5a5 5 0 0 1-10 0z M7 6H4a3 3 0 0 0 3 4 M17 6h3a3 3 0 0 1-3 4 M12 14v4 M8 21h8"/>',
     phone: '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10 18h4"/>',
     glove: '<path d="M7 21v-8L5 9a1.5 1.5 0 0 1 2.5-1.5L9 10V4a1.5 1.5 0 0 1 3 0v5V3a1.5 1.5 0 0 1 3 0v6V5a1.5 1.5 0 0 1 3 0v9a7 7 0 0 1-2 5v2z"/>',
+    watch: '<circle cx="12" cy="12" r="6"/><path d="M9 6l1-4h4l1 4 M9 18l1 4h4l1-4 M12 9v3l2 1 M18 12h2"/>',
+    key: '<circle cx="7" cy="12" r="4"/><path d="M11 12h10 M18 12v3 M21 12v3"/>',
   };
   const icon = (name) =>
     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name] || icons.doc}</svg>`;
@@ -538,6 +551,43 @@ const ART = (() => {
 
       ${fpLabel(236, 44, '등대')}${fpLabel(80, 136, '해녀 작업장', 11)}${fpLabel(280, 146, '이장 집', 11)}
       ${fpLabel(280, 296, '민박', 11)}${fpLabel(95, 300, '선착장', 11)}${fpLabel(180, 455, '마을 어귀', 9)}
+      ${compass(334, 440)}
+      ${vignette}
+    `, '0 0 360 460'),
+
+    train: svg(`
+      <defs>
+        ${fpBaseDefs}
+        ${pat('tr-snow', 24, 24, '<rect width="24" height="24" fill="#c9d2dc"/><circle cx="5" cy="6" r="1.4" fill="#e8eef4"/><circle cx="17" cy="15" r="1.1" fill="#aab6c2"/>')}
+        ${pat('tr-board', 8, 30, '<rect width="8" height="30" fill="#4a3a2c"/><path d="M8 0v30" stroke="#2e241b" stroke-width="0.8"/>')}
+        ${pat('tr-cloth', 12, 12, '<rect width="12" height="12" fill="#5a2a2c"/><path d="M0 0h6v6H0zM6 6h6v6H6z" fill="#64302f"/>')}
+        ${pat('tr-steel', 10, 10, '<rect width="10" height="10" fill="#3a3a3e"/><circle cx="5" cy="5" r="1" fill="#4c4c52"/>')}
+      </defs>
+      <rect width="360" height="460" fill="url(#tr-snow)"/>
+      <rect x="70" width="10" height="460" fill="#6a6058"/><rect x="290" width="10" height="460" fill="#6a6058"/>
+      ${Array.from({ length: 24 }, (_, i) => `<rect x="62" y="${i * 20 + 4}" width="246" height="6" fill="#7a6a58" opacity="0.5"/>`).join('')}
+      <rect x="96" y="26" width="190" height="420" fill="#000" opacity="0.35"/>
+
+      <rect x="90" y="20" width="190" height="86" fill="url(#tr-board)"/>
+      <rect x="90" y="116" width="190" height="80" fill="url(#tr-steel)"/>
+      <rect x="90" y="206" width="190" height="134" fill="url(#fp-plank)"/>
+      <rect x="90" y="350" width="190" height="90" fill="url(#tr-cloth)"/>
+      <rect x="94" y="116" width="36" height="324" fill="url(#fp-plank)"/>
+      <rect x="102" y="210" width="20" height="126" fill="url(#fp-carpet)" stroke="#b08a4a" stroke-width="0.7"/>
+      <rect x="102" y="354" width="20" height="82" fill="url(#fp-carpet)" stroke="#b08a4a" stroke-width="0.7"/>
+      <rect x="100" y="106" width="24" height="10" fill="#2b2018"/><rect x="100" y="196" width="24" height="10" fill="#2b2018"/><rect x="100" y="340" width="24" height="10" fill="#2b2018"/>
+      ${lamp(200, 62, 50)}${lamp(200, 156, 45)}${lamp(200, 277, 40)}${lamp(200, 395, 55)}${lamp(112, 270, 40)}
+
+      <path d="M90 20H280V106H90Z M90 116H280V196H90Z M90 206H280V340H90Z M90 350H280V440H90Z M130 116V196 M130 206V340 M130 350V440 M130 255H280 M130 298H280" fill="none" stroke="#130e0a" stroke-width="7"/>
+      <path d="M90 20H280V106H90Z M90 116H280V196H90Z M90 206H280V340H90Z M90 350H280V440H90Z M130 116V196 M130 206V340 M130 350V440 M130 255H280 M130 298H280" fill="none" stroke="#8c7149" stroke-width="1.2"/>
+      ${vdoor(130, 144, 1)}${vdoor(130, 265, 1)}${vdoor(130, 383, 1)}
+      <rect x="106" y="16" width="24" height="8" fill="#2b2018"/>
+      ${win(277, 40, 6, 40)}${win(277, 136, 6, 40)}${win(277, 216, 6, 30)}${win(277, 262, 6, 30)}${win(277, 305, 6, 30)}${win(277, 365, 6, 60)}
+      ${win(87, 240, 6, 60)}${win(87, 370, 6, 50)}
+
+      ${fpLabel(200, 66, '화물칸', 11)}${fpLabel(205, 160, '승무원실', 11)}
+      ${fpLabel(205, 237, '2호', 9)}${fpLabel(205, 281, '3호 객실', 11)}${fpLabel(205, 323, '4호', 9)}
+      ${fpLabel(205, 399, '식당칸', 11)}${fpLabel(48, 276, '침대칸', 10)}${fpLabel(48, 290, '복도', 10)}
       ${compass(334, 440)}
       ${vignette}
     `, '0 0 360 460'),
